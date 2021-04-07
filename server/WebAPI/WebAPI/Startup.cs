@@ -1,4 +1,5 @@
 using JWT;
+using JWT.Algorithms;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 
 using Serilog;
 
+using ServerLib.Authentication;
 using ServerLib.Data;
 
 using System;
@@ -15,19 +17,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using WebAPI.Data;
 using WebAPI.Settings;
 
 namespace WebAPI
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -35,14 +36,19 @@ namespace WebAPI
             services.AddControllers();
 
             services
-                .AddSingleton(provider => provider
-                        .GetService<IConfiguration>()
-                        .GetSection(nameof(DatabaseSettings))
-                        .Get<DatabaseSettings>())
-                .AddSingleton<DatabaseBuilder>()
+                .AddSingleton(Configuration)
+                .AddSingleton(Configuration
+                    .GetSection(nameof(DatabaseSettings))
+                    .Get<DatabaseSettings>())
+                .AddSingleton(Configuration
+                    .GetSection(nameof(JwtSettings))
+                    .Get<JwtSettings>())
+                .AddSingleton<IJwtAlgorithm, HMACSHA256Algorithm>()
+                .AddSingleton<IJwtEncoder, JwtEncoder>()
+                .AddSingleton<JwtTokenFactory>()
                 .AddSingleton(provider => provider
                     .GetService<DatabaseBuilder>()
-                    .Build().Result)          
+                    .Build().Result)
                 .AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtAuthenticationDefaults.AuthenticationScheme;
@@ -72,6 +78,7 @@ namespace WebAPI
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseSerilogRequestLogging();
 
