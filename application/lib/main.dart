@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sensetive/pages/home.dart';
+import 'package:sensetive/pages/measure.dart';
 
 void main() {
   runApp(MyApp());
@@ -13,9 +14,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Starter Template',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.indigo,
       ),
-      home: Home(),
+      home: Measure(),
     );
   }
 }
