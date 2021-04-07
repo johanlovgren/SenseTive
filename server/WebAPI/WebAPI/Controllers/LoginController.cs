@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
+using ServerLib;
+using ServerLib.Data;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +16,23 @@ namespace WebAPI.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ILogger<LoginController> _logger;
+        private readonly Database _database;
 
-        public LoginController(ILogger<LoginController> logger)
+        public LoginController(ILogger<LoginController> logger, Database database)
         {
             _logger = logger;
+            _database = database;
         }
 
-        [HttpGet]
-        public LoginResponse Get() => new LoginResponse(ok: false)
+        [HttpPost]
+        [Route("/[controller]")]
+        public LoginResponse Login([FromBody] LoginRequest request)
         {
+            return new LoginResponse(ok: false)
+            {
             
-        };
+            };
+        }
 
         public class LoginResponse
         {
@@ -33,6 +42,12 @@ namespace WebAPI.Controllers
             {
                 Ok = ok;
             }
+        }
+
+        public class LoginRequest
+        {
+            public LoginMethod Method { get; set; }
+            public string Idenfifier { get; set; }
         }
     }
 }
