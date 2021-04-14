@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace ServerLib.Data
 {
+    /// <summary>
+    /// A builder class that is useful to construct an instance of the <see cref="Database"/> class.
+    /// </summary>
     public class DatabaseBuilder : rDB.Builder.DatabaseBuilder<Database, MySqlConnection>
     {
         public DatabaseBuilder(DatabaseSettings settings) : base(new Database(settings))
@@ -15,6 +18,10 @@ namespace ServerLib.Data
 
         }
 
+        /// <summary>
+        /// Asynchronously builds an instance of the database.
+        /// </summary>
+        /// <returns></returns>
         public override async Task<Database> Build()
         {
             if (TableMap == null || TableMap.Count == 0)

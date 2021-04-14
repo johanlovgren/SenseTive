@@ -12,6 +12,7 @@ using Serilog;
 using ServerLib.Authentication;
 using ServerLib.Data;
 using ServerLib.Extensions;
+using ServerLib.Settings;
 
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,10 @@ namespace WebAPI
             Configuration = configuration;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// Configures the services to use to create the web API host.
+        /// </summary>
+        /// <param name="services">The service collection to add and configure services to</param>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -40,8 +44,9 @@ namespace WebAPI
                 .AddSingleton(Configuration)
                 .AddSingleton(Configuration
                     .GetSection<DatabaseSettings>())
+                .AddTransient<DatabaseBuilder>()
                 .AddSingleton(Configuration
-                    .GetSection<DatabaseSettings>())
+                    .GetSection<JwtSettings>())
                 .AddSingleton<IJwtAlgorithm, HMACSHA256Algorithm>()
                 .AddSingleton<IJwtEncoder, JwtEncoder>()
                 .AddSingleton<JwtTokenFactory>()
@@ -55,22 +60,22 @@ namespace WebAPI
                 })
                 .AddJwt(options =>
                 {
-                    var settings = Configuration
-                        .GetSection(nameof(JwtSettings))
-                        .Get<JwtSettings>();
+                    var settings = Configuration.GetSection<JwtSettings>();
 
-                    options.Keys = settings.Keys;
+                    options.Keys = new string[] { settings.Secret };
                     options.VerifySignature = settings.ForceSignatureVerification;
                 });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// Configures the application builder and specifies how HTTP requests are handled.
+        /// </summary>
+        /// <param name="app">The builder used to construct the application.</param>
+        /// <param name="env">The environment of the web API host</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
 
             app.UseHttpsRedirection();
 

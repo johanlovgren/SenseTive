@@ -1,53 +1,91 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using ServerLib;
+using ServerLib.Authentication;
 using ServerLib.Data;
+using ServerLib.Settings;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace WebAPI.Controllers
 {
+    /// <summary>
+    /// A controller responsible for authorizing users and granting access tokens 
+    /// to use for other controllers of the system.
+    /// </summary>
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class LoginController : ControllerBase
     {
         private readonly ILogger<LoginController> _logger;
         private readonly Database _database;
+        private readonly JwtTokenFactory _tokenFactory;
+        private readonly JwtSettings _tokenSettings;
 
-        public LoginController(ILogger<LoginController> logger, Database database)
+        public LoginController(ILogger<LoginController> logger, Database database, JwtTokenFactory factory, JwtSettings settings)
         {
             _logger = logger;
             _database = database;
+            _tokenFactory = factory;
+            _tokenSettings = settings;
         }
 
+        /// <summary>
+        /// Handles a log in request made by a user and responds accordingly.
+        /// </summary>
+        /// <param name="request">The <see cref="LoginRequest">login request</see> made by the user.</param>
+        /// <returns>A <see cref="LoginResponse">login response</see> if login was successful, <see langword="null"/> otherwise.</returns>
         [HttpPost]
+        [AllowAnonymous]
         [Route("/[controller]")]
         public LoginResponse Login([FromBody] LoginRequest request)
         {
-            return new LoginResponse(ok: false)
+            if (request == null || string.IsNullOrEmpty(request.Identifier))
             {
-            
-            };
+                Response.StatusCode = 400;
+                return null;
+            }
+
+            return new LoginResponse(_tokenFactory.Encode(TokenData.Create(Guid.Empty, _tokenSettings.TokenExpiry)));
         }
 
+        /// <summary>
+        /// A class used to represent the response of a log in request.
+        /// </summary>
         public class LoginResponse
         {
-            public bool Ok { get; } 
+            /// <summary>
+            /// The JWT token granted to the user if the log in request was successful.
+            /// </summary>
+            public string Token { get; set; }
 
-            public LoginResponse(bool ok)
+            public LoginResponse(string token)
             {
-                Ok = ok;
+                Token = token;
             }
         }
 
+        /// <summary>
+        /// A class used to represent the log in request submitted by a user
+        /// </summary>
         public class LoginRequest
         {
+            /// <summary>
+            /// The log in method used by the user to log in
+            /// </summary>
             public LoginMethod Method { get; set; }
-            public string Idenfifier { get; set; }
+
+            /// <summary>
+            /// The idenfifier used by the user to log in
+            /// </summary>
+            public string Identifier { get; set; }
         }
     }
 }
