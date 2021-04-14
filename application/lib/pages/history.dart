@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sensetive/pages/result/result.dart';
 import 'package:sensetive/models/reading_models.dart';
+import 'package:sensetive/services/database.dart';
 
 /// Page showing the history of all readings
 class History extends StatefulWidget {
@@ -13,21 +14,60 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
-  List<Reading> _readings;
+  Database _database;
+  //List<Reading> _readings;
 
 
   @override
   void initState() {
     super.initState();
-    _readings = widget.readings;
+    //_readings = widget.readings;
   }
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+      initialData: [],
+      future: _loadReadings(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        return !snapshot.hasData
+            ? Center(child: CircularProgressIndicator())
+            : _buildListView(snapshot);
+      },
+    );
+  }
+
+  Future<List<Reading>> _loadReadings() async {
+    await DatabaseFileRoutines().readReadings().then((readingsJson) {
+      _database = databaseFromJson(readingsJson);
+      _database.readings.sort((a, b) => b.date.compareTo(a.date));
+    });
+    return _database.readings;
+  }
+
+  Widget _buildListView(AsyncSnapshot snapshot) {
     return ListView.builder(
-      itemCount: _readings.length,
+      itemCount: snapshot.data.length,
       itemBuilder: (BuildContext context, int index) {
-        return ReadingRowWidget(index: index, reading: _readings[index]);
+        return Dismissible(
+          key: Key(snapshot.data[index].id.toString()),
+          background: Container(
+            color: Colors.red,
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.only(left: 16.0),
+            child: Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+          ),
+          child: ReadingRowWidget(index: index, reading: snapshot.data[index]),
+          onDismissed: (direction) {
+            setState(() {
+              _database.readings.removeAt(index);
+            });
+            DatabaseFileRoutines().writeReadings(databaseToJson(_database));
+          },
+        );
       },
     );
   }

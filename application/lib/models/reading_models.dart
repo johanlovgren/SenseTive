@@ -1,30 +1,42 @@
 /// Model containing a reading
 class Reading {
+  final int id;
   final DateTime date;
   final int durationSeconds;
   final List<int> heartRate;
   final List<int> oxygenLevel;
   final List<Contraction> contractions;
 
-  Reading({this.date,
-      this.durationSeconds,
-      this.heartRate,
-      this.oxygenLevel,
-      this.contractions});
+  Reading({this.id,
+    this.date,
+    this.durationSeconds,
+    this.heartRate,
+    this.oxygenLevel,
+    this.contractions});
 
   /// Create a reading from a JSON format
-  factory Reading.fromJson(Map<String, dynamic> json) =>
-      Reading(
-        date: json["date"],
-        durationSeconds: json["duration"],
-        heartRate: json["heartRate"],
-        oxygenLevel: json["oxygenLevel"],
-        contractions: json["contractions"]
-      );
+  factory Reading.fromJson(Map<String, dynamic> json) {
+    DateTime _date = DateTime.parse(json["date"]);
+    return Reading(
+      id: json["id"],
+      date: _date,
+      durationSeconds: json["duration"],
+      heartRate: json["heartRate"] == null
+        ? null
+        : List<int>.from(json["heartRate"]),
+      oxygenLevel: json["oxygenLevel"] == null
+        ? null
+        : List<int>.from(json["oxygenLevel"]),
+      contractions: json["contractions"] == null
+        ? null
+          : List<Contraction>.from(json["contractions"].map((x) => Contraction.fromJson(x)))
+    );
+  }
 
   /// Convert a Reading to JSON
   Map<String, dynamic> toJson() => {
-    "date": date,
+    "id": id,
+    "date": date.toString(),
     "duration": durationSeconds,
     "heartRate": heartRate,
     "oxygenLevel": oxygenLevel,
@@ -41,19 +53,19 @@ class Contraction {
   final String intensity;
 
   Contraction({this.start,
-      this.end,
-      this.duration,
-      this.freq,
-      this.intensity});
+    this.end,
+    this.duration,
+    this.freq,
+    this.intensity});
 
   /// Create a reading from a JSON format
   factory Contraction.fromJson(Map<String, dynamic> json) =>
       Contraction(
-        start: json["start"],
-        end: json["end"],
-        duration: json["duration"],
-        freq: json["freq"],
-        intensity: json["intensity"]
+          start: json["start"],
+          end: json["end"],
+          duration: json["duration"],
+          freq: json["freq"],
+          intensity: json["intensity"]
       );
 
   /// Convert a Contraction to JSON
