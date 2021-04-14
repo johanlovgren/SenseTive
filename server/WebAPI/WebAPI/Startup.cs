@@ -11,6 +11,7 @@ using Serilog;
 
 using ServerLib.Authentication;
 using ServerLib.Data;
+using ServerLib.Extensions;
 
 using System;
 using System.Collections.Generic;
@@ -38,11 +39,9 @@ namespace WebAPI
             services
                 .AddSingleton(Configuration)
                 .AddSingleton(Configuration
-                    .GetSection(nameof(DatabaseSettings))
-                    .Get<DatabaseSettings>())
+                    .GetSection<DatabaseSettings>())
                 .AddSingleton(Configuration
-                    .GetSection(nameof(JwtSettings))
-                    .Get<JwtSettings>())
+                    .GetSection<DatabaseSettings>())
                 .AddSingleton<IJwtAlgorithm, HMACSHA256Algorithm>()
                 .AddSingleton<IJwtEncoder, JwtEncoder>()
                 .AddSingleton<JwtTokenFactory>()
