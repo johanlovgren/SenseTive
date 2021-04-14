@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'result/result.dart';
+import 'history.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -7,7 +7,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  static final List<String> _headings = ['Home', 'History', 'Profile'];
   Widget _currentPage;
+  String _currentHeading;
   int _currentIndex = 0;
   List _listPages = [];
 
@@ -16,15 +18,19 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     // Todo Add pages in _listPages and set current page
-    _listPages..add(Result());
+    _listPages
+      ..add(Container()) // TODO add Home page
+      ..add(History())
+      ..add(Container()); // TODO add profile page
     _currentPage = _listPages[_currentIndex];
+    _currentHeading = _headings[_currentIndex];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text(_currentHeading),
       ),
       body: SafeArea(
         child: _currentPage,
@@ -42,7 +48,7 @@ class _HomeState extends State<Home> {
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.account_circle),
-              label: 'User page'
+              label: 'Profile'
           ),
         ],
         onTap: (selectedIndex) => _changePage(selectedIndex),
@@ -54,8 +60,9 @@ class _HomeState extends State<Home> {
     // TODO Fix this
     print('Selected index: $selectedIndex');
     setState(() {
-      //_currentIndex = selectedIndex;
+      _currentIndex = selectedIndex;
       _currentPage = _listPages[_currentIndex];
+      _currentHeading = _headings[_currentIndex];
     });
 
   }
