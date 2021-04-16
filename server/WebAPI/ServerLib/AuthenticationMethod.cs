@@ -8,11 +8,16 @@ namespace ServerLib
 {
     [JsonConverter(typeof(JsonStringEnumConverter))]
     [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-    public enum LoginMethod
+    public enum AuthenticationMethod
     {
         /// <summary>
-        /// Login method Firebase specifies that Google Firebase is/was used as the login method by an user
+        /// Authentication method Firebase specifies that Google Firebase is/was used as the authentication method by an user
         /// </summary>
-        Firebase
+        Firebase,
+
+        /// <summary>
+        /// Authentication method Debug specifies that no authentication should be done and all users should be allowed. 
+        /// </summary>
+        Debug
     }
 }

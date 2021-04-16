@@ -9,9 +9,11 @@ using Microsoft.Extensions.Hosting;
 
 using Serilog;
 
+using ServerLib;
 using ServerLib.Authentication;
 using ServerLib.Data;
 using ServerLib.Extensions;
+using ServerLib.Firebase;
 using ServerLib.Settings;
 
 using System;
@@ -53,6 +55,7 @@ namespace WebAPI
                 .AddSingleton(provider => provider
                     .GetService<DatabaseBuilder>()
                     .Build().Result)
+                .AddLoginAuthenticators()
                 .AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtAuthenticationDefaults.AuthenticationScheme;

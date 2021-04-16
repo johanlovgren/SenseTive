@@ -28,13 +28,16 @@ namespace WebAPI.Controllers
         private readonly Database _database;
         private readonly JwtTokenFactory _tokenFactory;
         private readonly JwtSettings _tokenSettings;
+        private readonly AuthenticatorRepository _authenticatorRepository;
 
-        public LoginController(ILogger<LoginController> logger, Database database, JwtTokenFactory factory, JwtSettings settings)
+        public LoginController(ILogger<LoginController> logger, Database database, JwtTokenFactory factory, JwtSettings settings,
+            AuthenticatorRepository authenticatorRepository)
         {
             _logger = logger;
             _database = database;
             _tokenFactory = factory;
             _tokenSettings = settings;
+            _authenticatorRepository = authenticatorRepository;
         }
 
         /// <summary>
@@ -45,7 +48,7 @@ namespace WebAPI.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("/[controller]")]
-        public LoginResponse Login([FromBody] LoginRequest request)
+        public async Task<LoginResponse> Login([FromBody] LoginRequest request)
         {
             if (request == null || string.IsNullOrEmpty(request.Identifier))
             {
@@ -53,7 +56,22 @@ namespace WebAPI.Controllers
                 return null;
             }
 
-            return new LoginResponse(_tokenFactory.Encode(TokenData.Create(Guid.Empty, _tokenSettings.TokenExpiry)));
+            var authResult = await _authenticatorRepository.Authenticate(request.Method, request.Identifier, request.Password)
+                .ConfigureAwait(false);
+
+            if (authResult == null)
+            {
+                Response.StatusCode = 500;
+                return null;
+            } else if (!authResult.IsSuccessful)
+            {
+                Response.StatusCode = 403;
+                return null;
+            }
+
+            return new LoginResponse(_tokenFactory.Encode(TokenData.Create(
+                Guid.Empty, 
+                _tokenSettings.TokenExpiry)));
         }
 
         /// <summary>
@@ -80,12 +98,19 @@ namespace WebAPI.Controllers
             /// <summary>
             /// The log in method used by the user to log in
             /// </summary>
-            public LoginMethod Method { get; set; }
+            public AuthenticationMethod Method { get; set; }
 
             /// <summary>
-            /// The idenfifier used by the user to log in
+            /// The idenfifier to use to authenticate with the
+            /// specified authentication method
             /// </summary>
             public string Identifier { get; set; }
+
+            /// <summary>
+            /// The password or key to use to authenticate with the 
+            /// specified authentication method
+            /// </summary>
+            public string Password { get; set; }
         }
     }
 }
