@@ -43,7 +43,7 @@ namespace WebAPI
         /// <returns>The authenticator associated with the specified authentication method. 
         /// If no such authenticator is found, a <see cref="NotImplementedException"/> is thrown since
         /// the specified authentication method therefore is not implemented or supported.</returns>
-        [NotNull]
+        [return: NotNull]
         public static IAuthenticator PickLoginAuthenticator(IServiceProvider serviceProvider, AuthenticationMethod method) =>
             method switch
             {
