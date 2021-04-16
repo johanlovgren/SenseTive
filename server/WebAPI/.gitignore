@@ -332,3 +332,5 @@ ASALocalRun/
 .idea/
 
 appsettings.Development.json
+sensetive-*.json
+.config/
