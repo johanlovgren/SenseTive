@@ -29,15 +29,17 @@ namespace WebAPI.Controllers
         private readonly JwtTokenFactory _tokenFactory;
         private readonly JwtSettings _tokenSettings;
         private readonly AuthenticatorRepository _authenticatorRepository;
+        private readonly AccountManager _accountManager;
 
         public LoginController(ILogger<LoginController> logger, Database database, JwtTokenFactory factory, JwtSettings settings,
-            AuthenticatorRepository authenticatorRepository)
+            AuthenticatorRepository authenticatorRepository, AccountManager accountManager)
         {
             _logger = logger;
             _database = database;
             _tokenFactory = factory;
             _tokenSettings = settings;
             _authenticatorRepository = authenticatorRepository;
+            _accountManager = accountManager;
         }
 
         /// <summary>
@@ -69,9 +71,17 @@ namespace WebAPI.Controllers
                 return null;
             }
 
+            var user = await _accountManager.GetOrCreateUser(request.Method, request.Identifier)
+                .ConfigureAwait(false);
+
+            if (user == null || !Guid.TryParse(user.UserId, out var userId))
+            {
+                Response.StatusCode = 500;
+                return null;
+            }
+
             return new LoginResponse(_tokenFactory.Encode(TokenData.Create(
-                Guid.Empty, 
-                _tokenSettings.TokenExpiry)));
+                userId, _tokenSettings.TokenExpiry)));
         }
 
         /// <summary>

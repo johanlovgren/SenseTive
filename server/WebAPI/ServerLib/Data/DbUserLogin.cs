@@ -18,17 +18,19 @@ namespace ServerLib.Data
         /// The GUID of the user in string form
         /// </summary>
         [DatabaseColumn("VARCHAR(36)", IsPrimaryKey = true, NotNull = true)]
-        public string UserId { get; private set; }
+        public string UserId { get; set; }
 
         /// <summary>
         /// The ordinal of the <see cref="LoginMethod">login method</see> to use to authenticate the user
         /// </summary>
+        [Index(Name = "login", Unique = true)]
         [DatabaseColumn("VARCHAR(32)", IsPrimaryKey = true, NotNull = true)]
-        public int LoginMethod { get; private set; }
+        public string LoginMethod { get; set; }
 
         /// <summary>
         /// The login identifier used to authenticate the user
         /// </summary>
+        [Index(Name = "login", Unique = true)]
         [DatabaseColumn("VARCHAR(256)", IsPrimaryKey = true, NotNull = true)]
         public string LoginIdentifier { get; set; }
     }
