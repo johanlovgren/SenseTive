@@ -17,6 +17,7 @@ namespace ServerLib.Data
         /// <summary>
         /// The GUID of the user in string form
         /// </summary>
+        [ForeignKey(typeof(DbUser), nameof(DbUser.UserId))]
         [DatabaseColumn("VARCHAR(36)", IsPrimaryKey = true, NotNull = true)]
         public string UserId { get; set; }
 
