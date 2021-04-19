@@ -18,7 +18,7 @@ namespace ServerLib.Data
         [DatabaseColumn("VARCHAR(36)", IsPrimaryKey = true, NotNull = true)]
         public string UserId { get; set; }
 
-        [DatabaseColumn("VARCHAR(32)", NotNull = true, Default = "\'User\'")]
+        [DatabaseColumn("VARCHAR(16)", NotNull = true, Default = "\'User\'")]
         public string Authorization { get; set; }
 
         public DbUser()
