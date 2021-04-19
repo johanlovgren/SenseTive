@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:sensetive/blocs/authentication_bloc_provider.dart';
+import 'package:sensetive/services/authentication.dart';
 import 'history.dart';
+
+import 'package:sensetive/blocs/authentication_bloc.dart';
+import 'package:sensetive/blocs/home_bloc.dart';
+import 'package:sensetive/blocs/home_bloc_provider.dart';
+
+
 
 class Home extends StatefulWidget {
   @override
@@ -7,6 +15,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  AuthenticationBloc _authenticationBloc;
+  HomeBloc _homeBloc;
+
   static final List<String> _headings = ['Home', 'History', 'Profile'];
   Widget _currentPage;
   String _currentHeading;
@@ -17,6 +28,8 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+    _authenticationBloc = AuthenticationBloc(AuthenticationService());
+
     // Todo Add pages in _listPages and set current page
     _listPages
       ..add(Container()) // TODO add Home page
@@ -26,11 +39,37 @@ class _HomeState extends State<Home> {
     _currentHeading = _headings[_currentIndex];
   }
 
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _authenticationBloc = AuthenticationBlocProvider.of(context).authenticationBloc;
+    _homeBloc = HomeBlocProvider.of(context).homeBloc;
+  }
+
+
+  @override
+  void dispose() {
+    _homeBloc.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(_currentHeading),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.exit_to_app,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              _authenticationBloc.logoutUser.add(true);
+            },
+          )
+        ],
       ),
       body: SafeArea(
         child: _currentPage,

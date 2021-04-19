@@ -27,9 +27,15 @@ dependencies:
   # Chart library, BSD license
   fl_chart: ^0.35.0
 
-  intl: ^0.15.8
+  # Needed for parsing dates
+  intl: ^0.16.1
 
+  # Needed for persistent storage
   path_provider: ^1.1.0
+
+  # Needed for firebase auth
+  firebase_auth: ^0.20.1
+  firebase_core: ^0.7.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -55,7 +61,8 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
-
+  assets:
+    - lib/assets/images/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

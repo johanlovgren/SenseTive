@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "370947346419",
+    "project_id": "sensetive-f6899",
+    "storage_bucket": "sensetive-f6899.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370947346419:android:e60d274896bec3871c4c86",
+        "android_client_info": {
+          "package_name": "se.sensetive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "370947346419-scdsq2m60u4fh5fkg78rgkle9tmoh761.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3gABdAwyO3FJ-dTmJ8URaAMfKzIFmz9s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "370947346419-scdsq2m60u4fh5fkg78rgkle9tmoh761.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "370947346419-07oac35pnr2f0te2km4cm5p1mf6t9165.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "se.sensetive"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
