@@ -31,12 +31,13 @@ namespace ServerLib
             var loginTableName = loginTable.TableName;
 
             var q = userTable.Query()
+                ;
+
+            var existingUser = await userTable.SelectFirstOrDefault(query => query
                 .WhereExists(loginTable.Query()
                     .Where($"{loginTableName}.{nameof(DbUserLogin.LoginMethod)}", "=", method.ToString())
                     .Where($"{loginTableName}.{nameof(DbUserLogin.LoginIdentifier)}", "=", identifier)
-                    .WhereColumns($"{loginTableName}.{nameof(DbUserLogin.UserId)}", "=", $"{userTableName}.{nameof(DbUser.UserId)}"));
-
-            var existingUser = await userTable.SelectFirstOrDefault(query => q)
+                    .WhereColumns($"{loginTableName}.{nameof(DbUserLogin.UserId)}", "=", $"{userTableName}.{nameof(DbUser.UserId)}")))
                 .ConfigureAwait(false);
 
             if (existingUser != null)
@@ -65,7 +66,8 @@ namespace ServerLib
 
             var user = new DbUser()
             {
-                UserId = userId.ToString()
+                UserId = userId.ToString(),
+                Authorization = AuthorizationLevel.User.ToString()
             };
 
             var inserted = await userTable.Insert(user).ConfigureAwait(false);

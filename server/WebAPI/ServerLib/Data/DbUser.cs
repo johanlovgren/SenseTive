@@ -18,9 +18,17 @@ namespace ServerLib.Data
         [DatabaseColumn("VARCHAR(36)", IsPrimaryKey = true, NotNull = true)]
         public string UserId { get; set; }
 
+        [DatabaseColumn("VARCHAR(32)", NotNull = true, Default = "\'User\'")]
+        public string Authorization { get; set; }
+
         public DbUser()
         {
 
         }
+
+        public AuthorizationLevel GetAuthorizationLevel() =>
+            Enum.TryParse(typeof(AuthorizationLevel), Authorization, out var authLevel)
+                ? (AuthorizationLevel) authLevel
+                : AuthorizationLevel.Unauthorized;
     }
 }
