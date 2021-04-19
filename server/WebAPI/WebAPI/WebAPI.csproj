@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="sensetive-f6899-firebase-adminsdk-6yenl-2c224ca683.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="JWT.Extensions.AspNetCore" Version="7.1.0-beta2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
     <PackageReference Include="Serilog" Version="2.10.0" />

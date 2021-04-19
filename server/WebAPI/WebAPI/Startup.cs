@@ -44,17 +44,7 @@ namespace WebAPI
 
             services
                 .AddSingleton(Configuration)
-                .AddSingleton(Configuration
-                    .GetSection<DatabaseSettings>())
-                .AddTransient<DatabaseBuilder>()
-                .AddSingleton(Configuration
-                    .GetSection<JwtSettings>())
-                .AddSingleton<IJwtAlgorithm, HMACSHA256Algorithm>()
-                .AddSingleton<IJwtEncoder, JwtEncoder>()
-                .AddSingleton<JwtTokenFactory>()
-                .AddSingleton(provider => provider
-                    .GetService<DatabaseBuilder>()
-                    .Build().Result)
+                .AddServerLib()
                 .AddLoginAuthenticators()
                 .AddAuthentication(options =>
                 {

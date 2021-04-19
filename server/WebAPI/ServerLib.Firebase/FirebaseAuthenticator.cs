@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 
 namespace ServerLib.Firebase
 {
+    /// <summary>
+    /// Firebase authenticator that uses firebase to authenticate users
+    /// </summary>
     public class FirebaseAuthenticator : IAuthenticator
     {
         private readonly FirebaseSettings _settings;
@@ -28,9 +31,19 @@ namespace ServerLib.Firebase
             _settings = settings;
         }
 
+        /// <summary>
+        /// Initializes this authenticator and the firebase API's it uses.
+        /// </summary>
+        /// <returns></returns>
         public async Task Initialize() => await Initialize(CancellationToken.None)
             .ConfigureAwait(false);
 
+        /// <summary>
+        /// Initializes this authenticator and the firebase API's it uses 
+        /// with a specified cancellation token.
+        /// </summary>
+        /// <param name="token">The cancellation token to use to interrupt asynchronous operations.</param>
+        /// <returns></returns>
         public async Task Initialize(CancellationToken token)
         {
             var firebaseCredentialsFile = Path.IsPathRooted(_settings.FirebaseKeyPath) 
@@ -51,6 +64,13 @@ namespace ServerLib.Firebase
             _firebaseAuth = FirebaseAuth.GetAuth(_firebaseApp);
         }
 
+        /// <summary>
+        /// Authenticates credentials using Firebase
+        /// </summary>
+        /// <param name="identifier">The identifier to authenticate</param>
+        /// <param name="password">The password to authenticate</param>
+        /// <returns>The result of the authentication.
+        /// If successful, the authenticated identifier is the user ID provided by Firebase.</returns>
         public async Task<AuthenticationResult> Authenticate(string identifier, string password)
         {
             try
