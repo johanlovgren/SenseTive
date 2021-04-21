@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:clippy_flutter/clippy_flutter.dart';
 
 class HalfcircleWidget extends StatelessWidget {
+  final bool _isMeasuring;
+
+  HalfcircleWidget(this._isMeasuring);
+
   @override
   Widget build(BuildContext context) {
     return Arc(
@@ -16,7 +20,9 @@ class HalfcircleWidget extends StatelessWidget {
         )
       ],
       child: new Container(
-        height: 200.0,
+        height: !_isMeasuring
+            ? MediaQuery.of(context).size.height * 0.4
+            : MediaQuery.of(context).size.height * 0.4,
         width: MediaQuery.of(context).size.width,
         color: Colors.indigo,
       ),
