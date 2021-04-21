@@ -3,44 +3,50 @@ class Reading {
   final int id;
   final DateTime date;
   final int durationSeconds;
-  final List<int> heartRate;
+  final List<int> momHeartRate;
+  final List<int> babyHeartRate;
   final List<int> oxygenLevel;
   final List<Contraction> contractions;
 
   Reading({this.id,
     this.date,
     this.durationSeconds,
-    this.heartRate,
+    this.momHeartRate,
+    this.babyHeartRate,
     this.oxygenLevel,
     this.contractions});
 
   /// Create a reading from a JSON format
   factory Reading.fromJson(Map<String, dynamic> json) {
-    DateTime _date = DateTime.parse(json["date"]);
+    DateTime _date = DateTime.parse(json['date']);
     return Reading(
-      id: json["id"],
-      date: _date,
-      durationSeconds: json["duration"],
-      heartRate: json["heartRate"] == null
-        ? null
-        : List<int>.from(json["heartRate"]),
-      oxygenLevel: json["oxygenLevel"] == null
-        ? null
-        : List<int>.from(json["oxygenLevel"]),
-      contractions: json["contractions"] == null
-        ? null
-          : List<Contraction>.from(json["contractions"].map((x) => Contraction.fromJson(x)))
+        id: json['id'],
+        date: _date,
+        durationSeconds: json['duration'],
+        momHeartRate: json['momHeartRate'] == null
+            ? null
+            : List<int>.from(json['momHeartRate']),
+        babyHeartRate: json['babyHeartRate'] == null
+            ? null
+            : List<int>.from(json['babyHeartRate']),
+        oxygenLevel: json['oxygenLevel'] == null
+            ? null
+            : List<int>.from(json['oxygenLevel']),
+        contractions: json['contractions'] == null
+            ? null
+            : List<Contraction>.from(json['contractions'].map((x) => Contraction.fromJson(x)))
     );
   }
 
   /// Convert a Reading to JSON
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "date": date.toString(),
-    "duration": durationSeconds,
-    "heartRate": heartRate,
-    "oxygenLevel": oxygenLevel,
-    "contractions": contractions
+    'id': id,
+    'date': date.toString(),
+    'duration': durationSeconds,
+    'momHeartRate': momHeartRate,
+    'babyHeartRate': babyHeartRate,
+    'oxygenLevel': oxygenLevel,
+    'contractions': contractions
   };
 }
 
@@ -61,19 +67,19 @@ class Contraction {
   /// Create a reading from a JSON format
   factory Contraction.fromJson(Map<String, dynamic> json) =>
       Contraction(
-          start: json["start"],
-          end: json["end"],
-          duration: json["duration"],
-          freq: json["freq"],
-          intensity: json["intensity"]
+          start: json['start'],
+          end: json['end'],
+          duration: json['duration'],
+          freq: json['freq'],
+          intensity: json['intensity']
       );
 
   /// Convert a Contraction to JSON
   Map<String, dynamic> toJson() => {
-    "start": start,
-    "end": end,
-    "duration": duration,
-    "freq": freq,
-    "intensity": intensity
+    'start': start,
+    'end': end,
+    'duration': duration,
+    'freq': freq,
+    'intensity': intensity
   };
 }

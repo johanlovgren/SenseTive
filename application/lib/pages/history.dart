@@ -5,23 +5,16 @@ import 'package:sensetive/services/database.dart';
 
 /// Page showing the history of all readings
 class History extends StatefulWidget {
-  final List<Reading> readings = dummyReadings;
-
-  //History(this.readings);
-
   @override
   _HistoryState createState() => _HistoryState();
 }
 
 class _HistoryState extends State<History> {
-  Database _database;
-  //List<Reading> _readings;
-
+  Database _readingDatabase;
 
   @override
   void initState() {
     super.initState();
-    //_readings = widget.readings;
   }
 
   @override
@@ -39,10 +32,10 @@ class _HistoryState extends State<History> {
 
   Future<List<Reading>> _loadReadings() async {
     await DatabaseFileRoutines().readReadings().then((readingsJson) {
-      _database = databaseFromJson(readingsJson);
-      _database.readings.sort((a, b) => b.date.compareTo(a.date));
+      _readingDatabase = databaseFromJson(readingsJson);
+      _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
     });
-    return _database.readings;
+    return _readingDatabase.readings;
   }
 
   Widget _buildListView(AsyncSnapshot snapshot) {
@@ -51,6 +44,7 @@ class _HistoryState extends State<History> {
       itemBuilder: (BuildContext context, int index) {
         return Dismissible(
           key: Key(snapshot.data[index].id.toString()),
+          direction: DismissDirection.startToEnd,
           background: Container(
             color: Colors.red,
             alignment: Alignment.centerLeft,
@@ -63,9 +57,9 @@ class _HistoryState extends State<History> {
           child: ReadingRowWidget(index: index, reading: snapshot.data[index]),
           onDismissed: (direction) {
             setState(() {
-              _database.readings.removeAt(index);
+              _readingDatabase.readings.removeAt(index);
             });
-            DatabaseFileRoutines().writeReadings(databaseToJson(_database));
+            DatabaseFileRoutines().writeReadings(databaseToJson(_readingDatabase));
           },
         );
       },
@@ -74,7 +68,6 @@ class _HistoryState extends State<History> {
 }
 
 /// Widget displaying a reading in the [ListView]
-// TODO Not completed, only showing dummies!
 class ReadingRowWidget extends StatelessWidget {
   final int index;
   final Reading reading;
@@ -111,7 +104,7 @@ class ReadingRowWidget extends StatelessWidget {
       context,
       MaterialPageRoute(
         // TODO Fix dodge with baby and mother readings!
-          builder: (context) => ReadingResultWidget(reading, reading),
+          builder: (context) => ReadingResultWidget(reading),
           fullscreenDialog: fullscreenDialog
       ),
     );
@@ -119,10 +112,4 @@ class ReadingRowWidget extends StatelessWidget {
 }
 
 
-// ************ Dummies ******************
 
-List<Reading> dummyReadings = [
-  Reading(date: DateTime.now(), durationSeconds: 500, heartRate: [60, 61, 62, 63, 62, 61, 58]),
-  Reading(date: DateTime.now(), durationSeconds: 500, heartRate: [60, 61, 62, 63, 62, 61, 58]),
-  Reading(date: DateTime.now(), durationSeconds: 500, heartRate: [60, 61, 62, 63, 62, 61, 58]),
-];

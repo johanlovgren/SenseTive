@@ -5,10 +5,9 @@ import 'baby_reading.dart';
 
 /// Page showing the result of a reading
 class ReadingResultWidget extends StatefulWidget {
-  final Reading momReading;
-  final Reading babyReading;
+  final Reading reading;
 
-  ReadingResultWidget(this.momReading, this.babyReading);
+  ReadingResultWidget(this.reading);
 
   @override
   _ReadingResultWidgetState createState() => _ReadingResultWidgetState();
@@ -16,8 +15,7 @@ class ReadingResultWidget extends StatefulWidget {
 
 class _ReadingResultWidgetState extends State<ReadingResultWidget> with SingleTickerProviderStateMixin{
   TabController _tabController;
-  Reading _momReading;
-  Reading _babyReading;
+  Reading _reading;
 
 
   void _tabChanged() {
@@ -31,8 +29,7 @@ class _ReadingResultWidgetState extends State<ReadingResultWidget> with SingleTi
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_tabChanged);
-    _momReading = widget.momReading;
-    _babyReading = widget.babyReading;
+    _reading = widget.reading;
   }
 
 
@@ -63,8 +60,8 @@ class _ReadingResultWidgetState extends State<ReadingResultWidget> with SingleTi
         child: TabBarView(
           controller: _tabController,
           children: [
-            BabyReadingWidget(_babyReading),
-            MomReadingWidget(_momReading)
+            BabyReadingWidget(_reading),
+            MomReadingWidget(_reading)
           ],
         ),
       ),
