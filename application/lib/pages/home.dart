@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sensetive/pages/database_example.dart';
 import 'history.dart';
+
+
 
 class Home extends StatefulWidget {
   @override
@@ -14,12 +17,14 @@ class _HomeState extends State<Home> {
   List _listPages = [];
 
 
+
   @override
   void initState() {
+
     super.initState();
     // Todo Add pages in _listPages and set current page
     _listPages
-      ..add(Container()) // TODO add Home page
+      ..add(DatabaseExample()) // TODO add Home page
       ..add(History())
       ..add(Container()); // TODO add profile page
     _currentPage = _listPages[_currentIndex];
@@ -57,14 +62,12 @@ class _HomeState extends State<Home> {
   }
 
   void _changePage(int selectedIndex) {
-    // TODO Fix this
     print('Selected index: $selectedIndex');
     setState(() {
       _currentIndex = selectedIndex;
       _currentPage = _listPages[_currentIndex];
       _currentHeading = _headings[_currentIndex];
     });
-
   }
 }
 
