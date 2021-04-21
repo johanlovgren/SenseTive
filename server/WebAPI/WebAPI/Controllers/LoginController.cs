@@ -80,8 +80,12 @@ namespace WebAPI.Controllers
                 return null;
             }
 
-            return new LoginResponse(_tokenFactory.Encode(TokenData.Create(
-                userId, _tokenSettings.TokenExpiry)));
+            return new LoginResponse(_tokenFactory.Encode(
+                TokenData.Create(
+                    userId, 
+                    _tokenSettings.TokenExpiry,
+                    user.GetAuthorizationLevel()
+                    )));
         }
 
         /// <summary>
