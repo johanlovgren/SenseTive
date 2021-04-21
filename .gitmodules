@@ -1,0 +1,3 @@
+[submodule "server/rDB"]
+	path = server/rDB
+	url = https://github.com/Rickebo/rDB.git
