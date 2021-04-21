@@ -17,7 +17,7 @@ class BabyReadingWidget extends StatelessWidget {
       child: Column(
         children: [
           ReadingDateAndTimeWidget(_reading.date, _reading.durationSeconds),
-          ReadingHeartRateWidget(_reading.heartRate),
+          ReadingHeartRateWidget(_reading.babyHeartRate),
         ],
       ),
     );
