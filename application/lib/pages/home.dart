@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
-import 'package:sensetive/services/authentication.dart';
+import 'package:sensetive/services/backend.dart';
+import 'package:sensetive/services/firebase_authentication.dart';
 import 'history.dart';
 
 import 'package:sensetive/blocs/authentication_bloc.dart';
@@ -28,7 +29,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    _authenticationBloc = AuthenticationBloc(AuthenticationService());
+    _authenticationBloc = AuthenticationBloc(FirebaseAuthenticationService(), BackendService());
 
     // Todo Add pages in _listPages and set current page
     _listPages

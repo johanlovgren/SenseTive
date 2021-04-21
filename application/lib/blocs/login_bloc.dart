@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:sensetive/classes/validators.dart';
-import 'package:sensetive/services/authentication_api.dart';
+import 'package:sensetive/services/firebase_authentication_api.dart';
 
 class LoginBloc with Validators {
-  final AuthenticationApi authenticationApi;
+  final FirebaseAuthenticationApi authenticationApi;
   String _email;
   String _password;
   bool _emailValid = false;

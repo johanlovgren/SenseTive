@@ -1,4 +1,4 @@
-abstract class AuthenticationApi {
+abstract class FirebaseAuthenticationApi {
   getFirebaseAuth();
   Future<String> currentUserUid();
   Future<void> signOut();

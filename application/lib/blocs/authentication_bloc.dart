@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'package:sensetive/services/authentication_api.dart';
+import 'package:sensetive/services/backend_api.dart';
+import 'package:sensetive/services/firebase_authentication_api.dart';
 
 class AuthenticationBloc {
-  final AuthenticationApi authenticationApi;
+  final FirebaseAuthenticationApi authenticationApi;
   final StreamController<String> _authenticationController = StreamController<String>();
   Sink<String> get addUser => _authenticationController.sink;
   Stream<String> get user => _authenticationController.stream;
@@ -10,8 +11,9 @@ class AuthenticationBloc {
   Sink<bool> get logoutUser => _logoutController.sink;
   Stream<bool> get listLogoutUser => _logoutController.stream;
 
+  final BackendApi backendService;
 
-  AuthenticationBloc(this.authenticationApi) {
+  AuthenticationBloc(this.authenticationApi, this.backendService) {
     onAuthChanged();
   }
 
@@ -20,7 +22,10 @@ class AuthenticationBloc {
       String uid = user != null
           ? user.uid
           : null;
-      if (user != null && !(await authenticationApi.isEmailVerified())) {
+      if (user != null && (await authenticationApi.isEmailVerified())) {
+        String token = await user.getIdToken();
+        backendService.signIn(method: "Firebase", token: token);
+      } else {
         uid = null;
       }
       addUser.add(uid);

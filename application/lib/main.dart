@@ -7,7 +7,9 @@ import 'package:sensetive/blocs/authentication_bloc.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
 import 'package:sensetive/blocs/home_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
-import 'package:sensetive/services/authentication.dart';
+import 'package:sensetive/services/firebase_authentication.dart';
+
+import 'package:sensetive/services/backend.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,8 +19,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    AuthenticationService _authenticationService;//= AuthenticationService();
-    AuthenticationBloc _authenticationBloc;// = AuthenticationBloc(_authenticationService);
+    FirebaseAuthenticationService _authenticationService;
+    AuthenticationBloc _authenticationBloc;
+    BackendService _backendService;
 
 
     return FutureBuilder(
@@ -33,8 +36,13 @@ class MyApp extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         } else {
-          _authenticationService = AuthenticationService();
-          _authenticationBloc = AuthenticationBloc(_authenticationService);
+          _backendService = BackendService();
+
+          _authenticationService = FirebaseAuthenticationService();
+          _authenticationBloc = AuthenticationBloc(_authenticationService, _backendService);
+
+
+
           return AuthenticationBlocProvider(
               authenticationBloc: _authenticationBloc,
               child: StreamBuilder(

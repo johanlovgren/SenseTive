@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:sensetive/blocs/login_bloc.dart';
-import 'package:sensetive/services/authentication.dart';
+import 'package:sensetive/services/firebase_authentication.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -16,7 +16,7 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-    _loginBloc = LoginBloc(AuthenticationService());
+    _loginBloc = LoginBloc(FirebaseAuthenticationService());
     _loginBloc.loginError.listen((errorMessage) {
       List<Widget> actions = _defaultAlertButtons();
       if (errorMessage.contains('verified'))
