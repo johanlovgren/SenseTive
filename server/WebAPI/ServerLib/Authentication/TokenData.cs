@@ -10,6 +10,8 @@ namespace ServerLib.Authentication
 {
     public class TokenData
     {
+        private static readonly DateTime EpochTime = new DateTime(1970, 00, 00, 00, 00, 00, DateTimeKind.Utc);
+
         /// <summary>
         /// The GUID of the user associated with this instance
         /// </summary>
@@ -20,6 +22,12 @@ namespace ServerLib.Authentication
         /// The date and time of when the token was issued
         /// </summary>
         [JsonProperty("iat")]
+        public long IssueTimeUnix {
+            get => new DateTimeOffset(IssueTime).ToUnixTimeSeconds();
+            set => IssueTime = DateTimeOffset.FromUnixTimeSeconds(value).UtcDateTime;
+        }
+
+        [JsonIgnore]
         public DateTime IssueTime { get; set; }
 
         /// <summary>
@@ -27,6 +35,17 @@ namespace ServerLib.Authentication
         /// If null, the token has no set expiry date.
         /// </summary>
         [JsonProperty("exp")]
+        public long? ExpiryTimeEpoch 
+        {
+            get => ExpiryTime.HasValue
+                ? new DateTimeOffset(ExpiryTime.Value).ToUnixTimeSeconds()
+                : null;
+            set => ExpiryTime = value.HasValue
+                ? DateTimeOffset.FromUnixTimeSeconds(value.Value).UtcDateTime
+                : null;
+        }
+
+        [JsonIgnore]
         public DateTime? ExpiryTime { get; set; }
 
         /// <summary>
