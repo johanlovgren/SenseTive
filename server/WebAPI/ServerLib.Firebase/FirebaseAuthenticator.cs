@@ -60,6 +60,8 @@ namespace ServerLib.Firebase
                     .ConfigureAwait(false)
             };
 
+            FirebaseApp.DefaultInstance?.Delete();
+
             _firebaseApp = FirebaseApp.Create(options);
             _firebaseAuth = FirebaseAuth.GetAuth(_firebaseApp);
         }
