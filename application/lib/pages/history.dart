@@ -1,40 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:sensetive/pages/result/result.dart';
 import 'package:sensetive/models/reading_models.dart';
+import 'package:sensetive/services/database.dart';
 
 /// Page showing the history of all readings
 class History extends StatefulWidget {
-  final List<Reading> readings = dummyReadings;
-
-  //History(this.readings);
-
   @override
   _HistoryState createState() => _HistoryState();
 }
 
 class _HistoryState extends State<History> {
-  List<Reading> _readings;
-
+  Database _readingDatabase;
 
   @override
   void initState() {
     super.initState();
-    _readings = widget.readings;
   }
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+      initialData: [],
+      future: _loadReadings(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        return !snapshot.hasData
+            ? Center(child: CircularProgressIndicator())
+            : _buildListView(snapshot);
+      },
+    );
+  }
+
+  Future<List<Reading>> _loadReadings() async {
+    await DatabaseFileRoutines().readReadings().then((readingsJson) {
+      _readingDatabase = databaseFromJson(readingsJson);
+      _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
+    });
+    return _readingDatabase.readings;
+  }
+
+  Widget _buildListView(AsyncSnapshot snapshot) {
     return ListView.builder(
-      itemCount: _readings.length,
+      itemCount: snapshot.data.length,
       itemBuilder: (BuildContext context, int index) {
-        return ReadingRowWidget(index: index, reading: _readings[index]);
+        return Dismissible(
+          key: Key(snapshot.data[index].id.toString()),
+          direction: DismissDirection.startToEnd,
+          background: Container(
+            color: Colors.red,
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.only(left: 16.0),
+            child: Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+          ),
+          child: ReadingRowWidget(index: index, reading: snapshot.data[index]),
+          onDismissed: (direction) {
+            setState(() {
+              _readingDatabase.readings.removeAt(index);
+            });
+            DatabaseFileRoutines().writeReadings(databaseToJson(_readingDatabase));
+          },
+        );
       },
     );
   }
 }
 
 /// Widget displaying a reading in the [ListView]
-// TODO Not completed, only showing dummies!
 class ReadingRowWidget extends StatelessWidget {
   final int index;
   final Reading reading;
@@ -71,7 +104,7 @@ class ReadingRowWidget extends StatelessWidget {
       context,
       MaterialPageRoute(
         // TODO Fix dodge with baby and mother readings!
-          builder: (context) => ReadingResultWidget(reading, reading),
+          builder: (context) => ReadingResultWidget(reading),
           fullscreenDialog: fullscreenDialog
       ),
     );
@@ -79,10 +112,4 @@ class ReadingRowWidget extends StatelessWidget {
 }
 
 
-// ************ Dummies ******************
 
-List<Reading> dummyReadings = [
-  Reading(date: DateTime.now(), durationSeconds: 500, heartRate: [60, 61, 62, 63, 62, 61, 58]),
-  Reading(date: DateTime.now(), durationSeconds: 500, heartRate: [60, 61, 62, 63, 62, 61, 58]),
-  Reading(date: DateTime.now(), durationSeconds: 500, heartRate: [60, 61, 62, 63, 62, 61, 58]),
-];

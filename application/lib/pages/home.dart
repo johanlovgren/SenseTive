@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+
 import 'package:sensetive/blocs/authentication_bloc.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
+import 'package:sensetive/pages/database_example.dart';
 import 'history.dart';
 import 'package:sensetive/blocs/home_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
+
+
 
 
 
@@ -23,12 +27,14 @@ class _HomeState extends State<Home> {
   List _listPages = [];
 
 
+
   @override
   void initState() {
+
     super.initState();
     // Todo Add pages in _listPages and set current page
     _listPages
-      ..add(Container()) // TODO add Home page
+      ..add(DatabaseExample()) // TODO add Home page
       ..add(History())
       ..add(Container()); // TODO add profile page
     _currentPage = _listPages[_currentIndex];
@@ -97,7 +103,6 @@ class _HomeState extends State<Home> {
       _currentPage = _listPages[_currentIndex];
       _currentHeading = _headings[_currentIndex];
     });
-
   }
 }
 
