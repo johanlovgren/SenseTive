@@ -37,6 +37,9 @@ dependencies:
   firebase_auth: ^0.20.1
   firebase_core: ^0.7.0
 
+  # Secure storage for JWT token
+  flutter_secure_storage: ^4.1.0
+
   # Needed for REST communication
   http: ^0.12.2
 

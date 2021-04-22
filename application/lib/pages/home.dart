@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sensetive/blocs/authentication_bloc_provider.dart';
-import 'package:sensetive/services/backend.dart';
-import 'package:sensetive/services/firebase_authentication.dart';
-import 'history.dart';
-
 import 'package:sensetive/blocs/authentication_bloc.dart';
+import 'package:sensetive/blocs/authentication_bloc_provider.dart';
+import 'history.dart';
 import 'package:sensetive/blocs/home_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
 
@@ -29,8 +26,6 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    _authenticationBloc = AuthenticationBloc(FirebaseAuthenticationService(), BackendService());
-
     // Todo Add pages in _listPages and set current page
     _listPages
       ..add(Container()) // TODO add Home page
@@ -39,7 +34,6 @@ class _HomeState extends State<Home> {
     _currentPage = _listPages[_currentIndex];
     _currentHeading = _headings[_currentIndex];
   }
-
 
   @override
   void didChangeDependencies() {
@@ -67,7 +61,8 @@ class _HomeState extends State<Home> {
               color: Colors.white,
             ),
             onPressed: () {
-              _authenticationBloc.logoutUser.add(true);
+              // TODO remove when profile page is implemented
+              _authenticationBloc.addLogoutUser.add(true);
             },
           )
         ],
@@ -76,7 +71,6 @@ class _HomeState extends State<Home> {
         child: _currentPage,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        // TODO Change this
         currentIndex: _currentIndex,
         items: [
           BottomNavigationBarItem(
@@ -97,7 +91,6 @@ class _HomeState extends State<Home> {
   }
 
   void _changePage(int selectedIndex) {
-    // TODO Fix this
     print('Selected index: $selectedIndex');
     setState(() {
       _currentIndex = selectedIndex;

@@ -1,6 +1,8 @@
 import 'dart:async';
 
+/// Validators used to ensure email and password are valid
 class Validators {
+  /// Validates an email
   final validateEmail =
       StreamTransformer<String, String>.fromHandlers(handleData:
       (email, sink) {
@@ -11,6 +13,7 @@ class Validators {
         }
       });
 
+  /// Validates a password
   final validatePassword = StreamTransformer<String, String>.fromHandlers(handleData:
   (password, sink) {
     if (password.length >= 6) {

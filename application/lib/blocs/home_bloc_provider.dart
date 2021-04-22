@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'home_bloc.dart';
 
+/// Provider used to pass data between widget/states
+///
+/// [uid] user id for the current user
+/// [homeBloc] BLoC for Home Widget
 class HomeBlocProvider extends InheritedWidget {
   final HomeBloc homeBloc;
   final String uid;

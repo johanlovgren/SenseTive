@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   LoginBloc _loginBloc;
+  StreamSubscription errorSubscription;
 
 
   @override
@@ -41,11 +43,19 @@ class _LoginState extends State<Login> {
           actions: _defaultAlertButtons()
       );
     });
+    errorSubscription = _loginBloc.authenticationApi.loginError.listen((errorMessage) {
+      _showAlertDialog(
+          'Login error',
+          errorMessage,
+          actions: _defaultAlertButtons()
+      );
+    });
   }
 
 
   @override
   void dispose() {
+    errorSubscription.cancel();
     _loginBloc.dispose();
     super.dispose();
   }

@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sensetive/services/firebase_authentication_api.dart';
 
+/// BLoC For Home
 class HomeBloc {
   final FirebaseAuthenticationApi authenticationApi;
 
@@ -13,9 +13,6 @@ class HomeBloc {
   }
 
   void _startListeners() async {
-    User user = authenticationApi.getFirebaseAuth().currentUser;
-    if (user != null) {
-      await user.getIdToken().then((token) => print('Token: $token'));
-    }
+    // Start listeners on controllers
   }
 }

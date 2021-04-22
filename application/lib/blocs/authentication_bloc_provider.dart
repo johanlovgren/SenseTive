@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'authentication_bloc.dart';
+import 'package:sensetive/blocs/authentication_bloc.dart';
 
+/// AuthenticationBlocProvider used to transfer AuthenticationBloc's between
+/// widgets
 class AuthenticationBlocProvider extends InheritedWidget {
   final AuthenticationBloc authenticationBloc;
 
