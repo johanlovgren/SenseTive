@@ -10,13 +10,18 @@ namespace ServerLib.Authentication
 {
     public class TokenData
     {
-        private static readonly DateTime EpochTime = new DateTime(1970, 00, 00, 00, 00, 00, DateTimeKind.Utc);
-
         /// <summary>
         /// The GUID of the user associated with this instance
         /// </summary>
         [JsonProperty("sub")]
         public string UserId { get; set; }
+
+        [JsonIgnore]
+        public Guid UserGuid
+        {
+            get => Guid.Parse(UserId);
+            set => UserId = value.ToString();
+        }
 
         /// <summary>
         /// The date and time of when the token was issued
@@ -84,7 +89,7 @@ namespace ServerLib.Authentication
         /// Note that the time comparison is done in UTC time.
         /// </summary>
         /// <returns>True if the issue time of the token is in the past, false otherwise.</returns>
-        public bool HasBeenIssued() => IssueTime > DateTime.UtcNow;
+        public bool HasBeenIssued() => IssueTime < DateTime.UtcNow;
 
         /// <summary>
         /// Checks whether or not a token has expired
