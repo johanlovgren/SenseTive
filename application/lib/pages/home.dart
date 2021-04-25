@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+
+import 'package:sensetive/blocs/authentication_bloc.dart';
+import 'package:sensetive/blocs/authentication_bloc_provider.dart';
 import 'package:sensetive/pages/database_example.dart';
 import 'history.dart';
+import 'package:sensetive/blocs/home_bloc.dart';
+import 'package:sensetive/blocs/home_bloc_provider.dart';
+
+
 
 
 
@@ -10,6 +17,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  AuthenticationBloc _authenticationBloc;
+  HomeBloc _homeBloc;
+
   static final List<String> _headings = ['Home', 'History', 'Profile'];
   Widget _currentPage;
   String _currentHeading;
@@ -32,16 +42,41 @@ class _HomeState extends State<Home> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _authenticationBloc = AuthenticationBlocProvider.of(context).authenticationBloc;
+    _homeBloc = HomeBlocProvider.of(context).homeBloc;
+  }
+
+
+  @override
+  void dispose() {
+    _homeBloc.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(_currentHeading),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.exit_to_app,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              // TODO remove when profile page is implemented
+              _authenticationBloc.addLogoutUser.add(true);
+            },
+          )
+        ],
       ),
       body: SafeArea(
         child: _currentPage,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        // TODO Change this
         currentIndex: _currentIndex,
         items: [
           BottomNavigationBarItem(
