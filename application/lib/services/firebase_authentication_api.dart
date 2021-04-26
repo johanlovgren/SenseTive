@@ -22,4 +22,6 @@ abstract class FirebaseAuthenticationApi implements ExternalAuthenticationApi {
   Future<void> sendEmailVerification();
   /// Check whether the current users email is verified or not
   Future<bool> isEmailVerified();
+  /// Dispose the authentication API
+  void dispose();
 }

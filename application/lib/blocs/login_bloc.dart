@@ -56,6 +56,7 @@ class LoginBloc with Validators {
 
   LoginBloc(this.authenticationApi) {
     _startListenersIfEmailPasswordAreValid();
+
   }
 
   /// Dispose and close all controllers
@@ -67,6 +68,7 @@ class LoginBloc with Validators {
     _loginOrCreateController.close();
     _loginErrorController.close();
     _createAccountErrorController.close();
+    authenticationApi.dispose();
   }
 
   /// Start listeners for controllers

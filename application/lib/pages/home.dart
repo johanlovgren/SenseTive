@@ -100,7 +100,6 @@ class _HomeState extends State<Home> {
       _currentPage = _listPages[_currentIndex];
       _currentHeading = _headings[_currentIndex];
     });
-
   }
 }
 
