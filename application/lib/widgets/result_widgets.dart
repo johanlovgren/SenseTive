@@ -30,8 +30,7 @@ class ReadingDateAndTimeWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ResultBall(
-                  text: 'Time\n'
-                      '${_durationSeconds % 60}m ${_durationSeconds ~/ 60}s',
+                  text: 'Duration\n' + durationToString(_durationSeconds),
                 ),
               ],
             )
@@ -70,7 +69,7 @@ class ReadingHeartRateWidget extends StatelessWidget {
                         text: '${_heartRate.reduce(min)}\nMinimum'
                     ),
                     ResultBall(
-                      text: '${_heartRate.reduce((a,b) => a + b) ~/ _heartRate.length}'
+                      text: '${(_heartRate.reduce((a,b) => a + b) / _heartRate.length).round()}'
                           '\nAverage',
                     ),
                     ResultBall(
@@ -90,7 +89,7 @@ class ReadingHeartRateWidget extends StatelessWidget {
 ///
 /// Se also [CardWithHeaderWidget] and [ResultBall]
 class ReadingOxygenLevelWidget extends StatelessWidget {
-  List<int> _oxygenLevel;
+  final List<int> _oxygenLevel;
 
   ReadingOxygenLevelWidget(this._oxygenLevel);
 
@@ -106,7 +105,7 @@ class ReadingOxygenLevelWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               ResultBall(
-                  text: '${_oxygenLevel.reduce((a,b) => a+b) / _oxygenLevel.length}'
+                  text: '${(_oxygenLevel.reduce((a,b) => a+b) / _oxygenLevel.length).round()}'
                       '%\nSpO2'
               ),
             ],

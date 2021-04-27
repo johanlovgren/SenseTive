@@ -51,7 +51,7 @@ class _ReadingResultWidgetState extends State<ReadingResultWidget> with SingleTi
               text: 'Baby\'s reading',
             ),
             Tab(
-              text: 'Moms\'s reading',
+              text: 'Mom\'s reading',
             )
           ],
         ),

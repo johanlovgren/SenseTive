@@ -1,10 +1,14 @@
+import 'package:intl/intl.dart';
+
 /// Model containing a reading
 class Reading {
   final int id;
   final DateTime date;
   final int durationSeconds;
   final List<int> momHeartRate;
+  int momAvgHeartRate;
   final List<int> babyHeartRate;
+  int babyAvgHeartRate;
   final List<int> oxygenLevel;
   final List<Contraction> contractions;
 
@@ -14,7 +18,21 @@ class Reading {
     this.momHeartRate,
     this.babyHeartRate,
     this.oxygenLevel,
-    this.contractions});
+    this.contractions}) {
+    momAvgHeartRate = momHeartRate != null
+        ? (momHeartRate.reduce((a, b) => a+b) / momHeartRate.length).round()
+        : null;
+    babyAvgHeartRate = babyHeartRate != null
+        ? (babyHeartRate.reduce((a, b) => a+b) / babyHeartRate.length).round()
+        : null;
+  }
+
+
+  @override
+  String toString() {
+    return '${DateFormat.yMMMd().add_Hm().format(date)}';
+  }
+
 
   /// Create a reading from a JSON format
   factory Reading.fromJson(Map<String, dynamic> json) {
@@ -82,4 +100,12 @@ class Contraction {
     'freq': freq,
     'intensity': intensity
   };
+}
+
+
+String durationToString(int durationSeconds) {
+  int hours = (durationSeconds ~/ (60 * 60));
+  int minutes = (durationSeconds - hours * (60 * 60)) ~/ 60;
+  int seconds = (durationSeconds - hours * (60 * 60) - minutes * 60);
+  return (hours > 0 ? '${hours}:' : '') + '$minutes:' + '$seconds';
 }
