@@ -77,6 +77,7 @@ class _HomeState extends State<Home> {
         child: _currentPage,
       ),
       bottomNavigationBar: BottomNavigationBar(
+        // TODO Change this
         currentIndex: _currentIndex,
         items: [
           BottomNavigationBarItem(
@@ -97,6 +98,7 @@ class _HomeState extends State<Home> {
   }
 
   void _changePage(int selectedIndex) {
+    // TODO Fix this
     print('Selected index: $selectedIndex');
     setState(() {
       _currentIndex = selectedIndex;
