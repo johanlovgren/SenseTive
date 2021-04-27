@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:clippy_flutter/clippy_flutter.dart';
 

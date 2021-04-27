@@ -1,22 +1,34 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:sensetive/models/reading_models.dart';
 import 'package:sensetive/widgets/halfcircle_background.dart';
 import 'package:sensetive/widgets/pulsedisplay.dart';
+import 'package:sensetive/services/database.dart';
+import 'dart:math';
 
 class Measure extends StatefulWidget {
   @override
   _MeasureState createState() => _MeasureState();
 }
 
-class _MeasureState extends State<Measure> {
+class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
+  AnimationController _animationController;
+  Animation _animation;
   int _currentTab = 0;
   bool _isMeasuring = false;
   static int timeInSec = 0;
   Timer timer;
   int _heartRate = 137;
+  List<int> _momsReading = [];
 
   @override
   void initState() {
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 2));
+    _animation = Tween(begin: 0.0, end: 12.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
+    _animationController.repeat(reverse: true);
     super.initState();
   }
 
@@ -25,6 +37,48 @@ class _MeasureState extends State<Measure> {
     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
     String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+  }
+
+  _insertDummyReading() {
+    int value = 90 + Random().nextInt(140 - 90);
+    _momsReading.add(value);
+  }
+
+  Reading _toReading(duration, momReadings) {
+    return Reading(
+        // Fix better solution for ID's
+        id: Random().nextInt(2 ^ 32),
+        date: DateTime.now(),
+        durationSeconds: duration,
+        momHeartRate: momReadings,
+        babyHeartRate: [
+          60,
+          62,
+          64,
+          61,
+          57,
+          60,
+          60,
+          62,
+          64,
+          61,
+          57,
+          60,
+          60,
+          62,
+          64,
+          61,
+          57,
+          60,
+          60,
+          62,
+          64,
+          61,
+          57,
+          60
+        ],
+        oxygenLevel: null,
+        contractions: null);
   }
 
   _startTimer() {
@@ -38,6 +92,8 @@ class _MeasureState extends State<Measure> {
         });
       } else {
         timeInSec = 0;
+        print(_momsReading);
+
         timer.cancel();
       }
     });
@@ -61,7 +117,6 @@ class _MeasureState extends State<Measure> {
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * 0.5,
                     alignment: Alignment.center,
-                    color: Colors.red.withOpacity(0.5),
                     child: !_isMeasuring
                         ? Text(
                             'Connected to \n SenseTive Sensor',
@@ -123,7 +178,26 @@ class _MeasureState extends State<Measure> {
                           ],
                         ),
                       )
-                    : PulseDisplayWidget(_heartRate),
+                    : AnimatedBuilder(
+                        animation: _animation,
+                        builder: (context, _) {
+                          return Container(
+                              height: MediaQuery.of(context).size.height * 0.3,
+                              width: MediaQuery.of(context).size.height * 0.3,
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.green.withOpacity(0.7),
+                                    spreadRadius: _animation.value * 1.5,
+                                    blurRadius: 5,
+                                  )
+                                ],
+                              ),
+                              child: PulseDisplayWidget(_heartRate));
+                        },
+                      ),
               ),
             ],
           ),
