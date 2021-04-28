@@ -68,7 +68,7 @@ class LoginBloc with Validators {
     _loginOrCreateController.close();
     _loginErrorController.close();
     _createAccountErrorController.close();
-    authenticationApi.dispose();
+    //authenticationApi.dispose();
   }
 
   /// Start listeners for controllers
