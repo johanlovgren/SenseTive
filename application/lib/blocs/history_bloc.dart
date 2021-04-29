@@ -38,7 +38,7 @@ class HistoryBloc {
   HistoryBloc({this.jwt}) {
     _databaseFileRoutines = DatabaseFileRoutines(uid: DecodedJwt(jwt: jwt).uid);
     _databaseFileRoutines.readReadings().then((readingsJson) {
-      _readingDatabase = databaseFromJson(readingsJson);
+      _readingDatabase = readingsDatabaseFromJson(readingsJson);
       _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
       _addReadingList.add(_readingDatabase.readings);
     });

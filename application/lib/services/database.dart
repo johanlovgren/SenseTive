@@ -18,7 +18,36 @@ class DatabaseFileRoutines {
   /// Get the local file containing the stored data
   Future<File> get _localReadingsFile async {
     final path = await _localPath;
-    return File('$path/$uid.json');
+    return File('$path/$uid.readings.json');
+  }
+
+  /// Get local file containing stored user data
+  Future<File> get _localUserFile async {
+    final path = await _localPath;
+    return File('$path/$uid.user.json');
+  }
+
+  /// Get stored user data as JSON
+  Future<String> readUserData() async{
+    try {
+      final file = await _localUserFile;
+      if (!file.existsSync()) {
+        print('File does not exist: ${file.absolute}');
+        await writeUserData('{"name": "","email":""}');
+      }
+
+      return await file.readAsString();
+    } catch (e) {
+      print('error readUserData: $e');
+      return '';
+    }
+  }
+  /// Write user data to persistent storage
+  ///
+  /// [json] userdata in JSON format
+  Future<File> writeUserData(String json) async {
+    final file = await _localUserFile;
+    return file.writeAsString('$json');
   }
 
   /// Get stored readings ([Reading]) as JSON
@@ -34,11 +63,13 @@ class DatabaseFileRoutines {
       return contents;
     } catch (e) {
       print('error readReadings: $e');
-      return "";
+      return '';
     }
   }
 
   /// Write readings ([Reading])to persistent storage
+  ///
+  /// [json] Readings in JSON format
   Future<File> writeReadings(String json) async{
     final file = await _localReadingsFile;
     return file.writeAsString('$json');
@@ -46,19 +77,42 @@ class DatabaseFileRoutines {
 }
 
 /// Create a [ReadingsDatabase] from a JSON
-ReadingsDatabase databaseFromJson(jsonString) {
-  final dataFromJson = json.decode(jsonString);
-  return ReadingsDatabase.fromJson(dataFromJson);
-}
+ReadingsDatabase readingsDatabaseFromJson(jsonString) =>
+    ReadingsDatabase.fromJson(json.decode(jsonString));
+
+/// Create a [UserDatabase] from JSON
+UserDatabase userDatabaseFromJson(jsonString) =>
+    UserDatabase.fromJson(json.decode(jsonString));
+
 
 /// Create a JSON from a [ReadingsDatabase]
-String databaseToJson(ReadingsDatabase data) {
+String databaseToJson(Database data) {
   final dataToJson = data.toJson();
   return json.encode(dataToJson);
 }
 
+abstract class Database {
+  Map<String, dynamic> toJson();
+}
+
+class UserDatabase extends Database {
+  String name;
+  String email;
+  UserDatabase({this.name, this.email});
+
+  factory UserDatabase.fromJson(Map<String, dynamic> json) =>
+      UserDatabase(name: json['name'], email: json['email']);
+
+  /// Returns the database as JSON
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'email': email
+  };
+}
+
+
 /// Database containing data to be stored in persistent storage
-class ReadingsDatabase {
+class ReadingsDatabase extends Database {
   List<Reading> readings;
   ReadingsDatabase({this.readings});
 
@@ -66,6 +120,8 @@ class ReadingsDatabase {
       ReadingsDatabase(
           readings: List<Reading>.from(json["readings"].map((x) => Reading.fromJson(x)))
       );
+
+  /// Returns the database as JSON
   Map<String, dynamic> toJson() => {
     "readings": List<dynamic>.from(readings.map((x) => x.toJson()))
   };

@@ -32,7 +32,7 @@ class _DatabaseExampleState extends State<DatabaseExample> {
         onPressed: () async {
           if (_readingDatabase == null) {
             await DatabaseFileRoutines(uid: _uid).readReadings().then((readingsJson) {
-              _readingDatabase = databaseFromJson(readingsJson);
+              _readingDatabase = readingsDatabaseFromJson(readingsJson);
             });
           }
           _readingDatabase.readings.add(dummyReading());

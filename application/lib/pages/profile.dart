@@ -34,14 +34,14 @@ class _ProfileState extends State<Profile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildProfilePage(),
+          _buildProfileInformation(),
           _buildInformationButtons()
         ],
       ),
     );
   }
 
-  Widget _buildProfilePage() {
+  Widget _buildProfileInformation() {
     return Container(
       color: Colors.grey.shade200,
       child: Column(
@@ -108,6 +108,8 @@ class _ProfileState extends State<Profile> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
+        /*
+        // Remove comment when implemented
         _profileTextButton(
             icon: Icon(Icons.people),
             text: Text('Friends'),
@@ -122,6 +124,7 @@ class _ProfileState extends State<Profile> {
               _openNextPage(context: context, index: 0);
             }
         ),
+         */
         _profileTextButton(
             icon: Icon(Icons.logout),
             text: Text('Sign out'),
