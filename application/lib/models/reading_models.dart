@@ -109,5 +109,5 @@ String durationToString(int durationSeconds) {
   int hours = (durationSeconds ~/ (60 * 60));
   int minutes = (durationSeconds - hours * (60 * 60)) ~/ 60;
   int seconds = (durationSeconds - hours * (60 * 60) - minutes * 60);
-  return (hours > 0 ? '${hours}:' : '') + '$minutes:' + '$seconds';
+  return (hours > 0 ? '$hours:' : '') + '$minutes:' + '$seconds';
 }

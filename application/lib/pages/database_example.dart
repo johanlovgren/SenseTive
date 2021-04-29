@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sensetive/blocs/home_bloc_provider.dart';
 import 'package:sensetive/models/reading_models.dart';
 import 'package:sensetive/services/database.dart';
 import 'dart:math';
+
+import 'package:sensetive/utils/jwt_decoder.dart';
 
 class DatabaseExample extends StatefulWidget {
   @override
@@ -9,10 +12,18 @@ class DatabaseExample extends StatefulWidget {
 }
 
 class _DatabaseExampleState extends State<DatabaseExample> {
-  Database _readingDatabase;
+  ReadingsDatabase _readingDatabase;
+  String _uid;
+
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    _uid = DecodedJwt(jwt: HomeBlocProvider.of(context).jwt).uid;
     return Container(
       child: IconButton(
         icon: Icon(Icons.add),
@@ -20,12 +31,12 @@ class _DatabaseExampleState extends State<DatabaseExample> {
         iconSize: 50,
         onPressed: () async {
           if (_readingDatabase == null) {
-            await DatabaseFileRoutines().readReadings().then((readingsJson) {
+            await DatabaseFileRoutines(uid: _uid).readReadings().then((readingsJson) {
               _readingDatabase = databaseFromJson(readingsJson);
             });
           }
           _readingDatabase.readings.add(dummyReading());
-          DatabaseFileRoutines().writeReadings(databaseToJson(_readingDatabase));
+          DatabaseFileRoutines(uid: _uid).writeReadings(databaseToJson(_readingDatabase));
         },
       ),
     );

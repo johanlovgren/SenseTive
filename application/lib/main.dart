@@ -61,9 +61,9 @@ class MyApp extends StatelessWidget {
                   } else if(snapshot.hasData) {
                     return HomeBlocProvider(
                       homeBloc: HomeBloc(
-                          _firebaseAuthenticationService
+                          _firebaseAuthenticationService,
                       ),
-                      uid: snapshot.data,
+                      jwt: snapshot.data,
                       child: _buildMaterialApp(Home()),
                     );
                   } else {
