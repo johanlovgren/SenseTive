@@ -27,21 +27,21 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasError) {
           return Container();
-        }
-        else if (snapshot.connectionState == ConnectionState.waiting) {
+        } else if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
             color: Colors.white,
             child: CircularProgressIndicator(),
           );
         } else {
-          _firebaseAuthenticationService = _firebaseAuthenticationService == null
-              ? FirebaseAuthenticationService()
-              : _firebaseAuthenticationService;
-          _backendService = _backendService == null
-              ? BackendService()
-              : _backendService;
+          _firebaseAuthenticationService =
+              _firebaseAuthenticationService == null
+                  ? FirebaseAuthenticationService()
+                  : _firebaseAuthenticationService;
+          _backendService =
+              _backendService == null ? BackendService() : _backendService;
           _authenticationBloc = _authenticationBloc == null
-              ? BackendAuthenticationBloc(_backendService, _firebaseAuthenticationService)
+              ? BackendAuthenticationBloc(
+                  _backendService, _firebaseAuthenticationService)
               : _authenticationBloc;
 
           // Until user is authenticated, show login page
@@ -58,11 +58,9 @@ class MyApp extends StatelessWidget {
                       color: Colors.white,
                       child: CircularProgressIndicator(),
                     );
-                  } else if(snapshot.hasData) {
+                  } else if (snapshot.hasData) {
                     return HomeBlocProvider(
-                      homeBloc: HomeBloc(
-                          _firebaseAuthenticationService
-                      ),
+                      homeBloc: HomeBloc(_firebaseAuthenticationService),
                       uid: snapshot.data,
                       child: _buildMaterialApp(Home()),
                     );
@@ -70,8 +68,7 @@ class MyApp extends StatelessWidget {
                     return _buildMaterialApp(Login());
                   }
                 },
-              )
-          );
+              ));
         }
       },
     );
