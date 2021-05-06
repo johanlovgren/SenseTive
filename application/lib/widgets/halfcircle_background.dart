@@ -11,7 +11,7 @@ class HalfcircleWidget extends StatelessWidget {
     return Arc(
       arcType: ArcType.CONVEX,
       edge: Edge.BOTTOM,
-      height: 70.0,
+      height: 50,
       clipShadows: [
         ClipShadow(
           color: Colors.black,

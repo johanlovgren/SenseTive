@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sensetive/blocs/backend_authentication_bloc.dart';
 import 'package:sensetive/pages/home.dart';
-import 'package:sensetive/pages/measure.dart';
 import 'package:sensetive/pages/login.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
 import 'package:sensetive/blocs/home_bloc.dart';
@@ -82,7 +81,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: Measure(),
+      home: homePage,
     );
   }
 }

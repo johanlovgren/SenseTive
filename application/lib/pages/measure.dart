@@ -21,11 +21,11 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
   //Controller for the animation
   AnimationController _animationController;
   Animation _animation;
-  int _currentTab = 0;
+  // int _currentTab = 0;
   bool _isMeasuring = true;
-  static int timeInSec = 0;
+  // static int timeInSec = 0;
   int _heartRate = 137;
-  List<int> _momsReading = [];
+  // List<int> _momsReading = [];
 
   @override
   void initState() {
@@ -47,118 +47,95 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Column(
+    return Padding(
+      padding: const EdgeInsets.all(0.0),
+      child: Column(
+        children: <Widget>[
+          Stack(
             children: <Widget>[
-              Stack(
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: HalfcircleWidget(_isMeasuring),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.35,
-                    alignment: Alignment.center,
-                    child: BlocProvider(
-                      create: (context) => _timerBloc,
-                      child: BlocBuilder<TimerBloc, TimerState>(
-                        buildWhen: (previousState, state) =>
-                            state.runtimeType != previousState.runtimeType,
-                        builder: (context, state) => state is TimerInitial
-                            ? Text(
-                                'Connected to \n SenseTive Sensor',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 35.0,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : TimerWidget(),
-                      ),
-                    ),
-                  ),
-                ],
+              Align(
+                alignment: Alignment.topCenter,
+                child: HalfcircleWidget(_isMeasuring),
               ),
-              BlocProvider(
-                create: (context) => _timerBloc,
-                child: Column(
-                  children: [
-                    BlocBuilder<TimerBloc, TimerState>(
-                        buildWhen: (previousState, state) =>
-                            state.runtimeType != previousState.runtimeType,
-                        builder: (context, state) => TimerActions()),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 100.0),
-                      child: !_isMeasuring
-                          ? Text(
-                              'Welcome Sarah! \n Let\'s start recording \n your measurements',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.indigo,
-                                fontSize: 30.0,
-                                fontWeight: FontWeight.bold,
-                                shadows: [
-                                  Shadow(
-                                    offset: Offset(0.0, 0.0),
-                                    blurRadius: 1.0,
-                                    color: Color.fromARGB(255, 0, 0, 0),
-                                  )
-                                ],
-                              ),
-                            )
-                          : AnimatedBuilder(
-                              animation: _animation,
-                              builder: (context, _) {
-                                return Container(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.2,
-                                    width: MediaQuery.of(context).size.height *
-                                        0.2,
-                                    decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.green.withOpacity(0.7),
-                                          spreadRadius: _animation.value * 1.5,
-                                          blurRadius: 5,
-                                        )
-                                      ],
-                                    ),
-                                    child: PulseDisplayWidget(_heartRate));
-                              },
-                            ),
-                    ),
-                  ],
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height * 0.35,
+                alignment: Alignment.center,
+                child: BlocProvider(
+                  create: (context) => _timerBloc,
+                  child: BlocBuilder<TimerBloc, TimerState>(
+                    buildWhen: (previousState, state) =>
+                    state.runtimeType != previousState.runtimeType,
+                    builder: (context, state) => state is TimerInitial
+                        ? Text(
+                      'Connected to \n SenseTive Sensor',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 35.0,
+                        color: Colors.white,
+                      ),
+                    )
+                        : TimerWidget(),
+                  ),
                 ),
               ),
             ],
           ),
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentTab,
-        backgroundColor: Colors.indigo,
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-              ),
-              label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle), label: 'User page'),
+          BlocProvider(
+            create: (context) => _timerBloc,
+            child: Column(
+              children: [
+                BlocBuilder<TimerBloc, TimerState>(
+                    buildWhen: (previousState, state) =>
+                    state.runtimeType != previousState.runtimeType,
+                    builder: (context, state) => TimerActions()),
+                Padding(
+                  padding: const EdgeInsets.only(top: 50.0),
+                  child: !_isMeasuring
+                      ? Text(
+                    'Welcome Sarah! \n Let\'s start recording \n your measurements',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.indigo,
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(0.0, 0.0),
+                          blurRadius: 1.0,
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        )
+                      ],
+                    ),
+                  )
+                      : AnimatedBuilder(
+                    animation: _animation,
+                    builder: (context, _) {
+                      return Container(
+                          height: MediaQuery.of(context).size.height *
+                              0.2,
+                          width: MediaQuery.of(context).size.height *
+                              0.2,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.withOpacity(0.7),
+                                spreadRadius: _animation.value * 1.5,
+                                blurRadius: 5,
+                              )
+                            ],
+                          ),
+                          child: PulseDisplayWidget(_heartRate));
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
-        onTap: (int value) {
-          setState(() {
-            _currentTab = value;
-          });
-        },
       ),
     );
   }

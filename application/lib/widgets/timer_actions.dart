@@ -22,7 +22,7 @@ class TimerActions extends StatelessWidget {
     if (currentState is TimerInitial || currentState is TimerRunComplete) {
       return [
         Transform.scale(
-          scale: 2.5,
+          scale: 2.0,
           child: FloatingActionButton(
             backgroundColor: Colors.indigo.shade300,
             child: Icon(Icons.play_arrow),
