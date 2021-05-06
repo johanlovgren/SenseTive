@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sensetive/blocs/backend_authentication_bloc.dart';
-import 'package:sensetive/blocs/welcome_bloc.dart';
 import 'package:sensetive/pages/home.dart';
 import 'package:sensetive/pages/login.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
@@ -9,7 +8,6 @@ import 'package:sensetive/blocs/home_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
 import 'package:sensetive/services/firebase_authentication.dart';
 import 'package:sensetive/services/backend.dart';
-import 'package:sensetive/pages/welcome.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,8 +28,7 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasError) {
           return Container();
-        }
-        else if (snapshot.connectionState == ConnectionState.waiting) {
+        } else if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
             color: Colors.white,
             child: CircularProgressIndicator(),

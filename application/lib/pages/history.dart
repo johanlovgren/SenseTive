@@ -3,6 +3,7 @@ import 'package:sensetive/blocs/history_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
 import 'package:sensetive/pages/result/result.dart';
 import 'package:sensetive/models/reading_models.dart';
+import 'package:sensetive/services/database.dart';
 
 /// Page showing the history of all readings
 class History extends StatefulWidget {
@@ -14,6 +15,7 @@ class _HistoryState extends State<History> {
   HistoryBloc _historyBloc;
   int _filter = 3;
   String sortBy;
+
 
   @override
   void initState() {
@@ -272,3 +274,4 @@ class ReadingRowWidget extends StatelessWidget {
     );
   }
 }
+

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:sensetive/pages/database_example.dart';
 import 'package:sensetive/pages/profile.dart';
 import 'history.dart';
 import 'package:sensetive/blocs/home_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
+import 'package:sensetive/pages/measure.dart';
+
+
 
 
 
@@ -26,9 +28,9 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     _listPages
-      ..add(DatabaseExample()) // TODO add Home page
+      ..add(Measure())
       ..add(History())
-      ..add(Profile()); // TODO add profile page
+      ..add(Profile());
     _currentPage = _listPages[_currentIndex];
     _currentHeading = _headings[_currentIndex];
   }

@@ -12,7 +12,6 @@ class Reading {
   final List<int> oxygenLevel;
   final List<Contraction> contractions;
 
-
   Reading({this.id,
     this.date,
     this.durationSeconds,
@@ -33,7 +32,6 @@ class Reading {
   String toString() {
     return '${DateFormat.yMMMd().add_Hm().format(date)}';
   }
-
 
 
   /// Create a reading from a JSON format
