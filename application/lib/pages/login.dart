@@ -5,9 +5,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:sensetive/blocs/login_bloc.dart';
 import 'package:sensetive/services/firebase_authentication.dart';
+import 'package:sensetive/widgets/background_image.dart';
 
 
-final String _privacyPolicy = 'SenseTive collects personal identification information, name and email, when creating an account and readings collected by the sensor kit.\nThe data is used to manage your account and ensure the application works properly. The data is stored securely until the account is deleted by the user. You have the right to access your personal data, correct any information you believe is inaccurate and erase the data. If you have any questions about SenseTive\'s privacy policy or wish to report a complaint you may contact us at info@negentropy.se.';
+const String _privacyPolicy = 'SenseTive collects personal identification information, name and email, when creating an account and readings collected by the sensor kit.\nThe data is used to manage your account and ensure the application works properly. The data is stored securely until the account is deleted by the user. You have the right to access your personal data, correct any information you believe is inaccurate and erase the data. If you have any questions about SenseTive\'s privacy policy or wish to report a complaint you may contact us at info@negentropy.se.';
+const String backgroundImagePath = 'lib/assets/images/pregnant_woman.jpg';
+
 
 class Login extends StatefulWidget {
   @override
@@ -76,7 +79,8 @@ class _LoginState extends State<Login> {
         resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
-            _backgroundImageWidget(),
+            //_backgroundImageWidget(),
+            const BackgroundImage(imagePath: backgroundImagePath),
             SafeArea(
               child: SingleChildScrollView(
                   padding: EdgeInsets.all(16),
@@ -89,27 +93,6 @@ class _LoginState extends State<Login> {
             )
           ],
         )
-    );
-  }
-
-  /// Builds the background image for the login page
-  Container _backgroundImageWidget() {
-    return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-              fit: BoxFit.fitHeight,
-              image: AssetImage('lib/assets/images/pregnant_woman.jpg')
-          )
-      ),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-            sigmaX: 3.0,
-            sigmaY: 3.0
-        ),
-        child: Container(
-          decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
-        ),
-      ),
     );
   }
 

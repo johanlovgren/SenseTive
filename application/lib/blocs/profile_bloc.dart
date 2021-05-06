@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:flutter/material.dart';
 import 'package:sensetive/services/database.dart';
 import 'package:sensetive/utils/jwt_decoder.dart';
 
@@ -17,7 +17,7 @@ class ProfileBloc {
   Sink<String> get _addEmail => _emailController.sink;
   Stream<String> get email => _emailController.stream;
 
-  ProfileBloc({this.jwt}) {
+  ProfileBloc({@required this.jwt}) {
     _databaseFileRoutines = DatabaseFileRoutines(uid: DecodedJwt(jwt: jwt).uid);
     _databaseFileRoutines.readUserData().then((json) {
       _userDatabase = userDatabaseFromJson(json);

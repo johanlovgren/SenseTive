@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sensetive/blocs/authentication_bloc.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
+import 'package:sensetive/blocs/home_bloc_provider.dart';
 import 'package:sensetive/blocs/profile_bloc.dart';
 
 final String blankProfile = 'lib/assets/images/blank_profile.png';
@@ -19,13 +20,14 @@ class _ProfileState extends State<Profile> {
   @override
   void initState() {
     super.initState();
-    _profileBloc = ProfileBloc();
+
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _authenticationBloc = AuthenticationBlocProvider.of(context).authenticationBloc;
+    _profileBloc = ProfileBloc(jwt: HomeBlocProvider.of(context).jwt);
   }
 
   @override

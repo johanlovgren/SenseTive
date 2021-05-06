@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:sensetive/blocs/backend_authentication_bloc.dart';
+import 'package:sensetive/blocs/welcome_bloc_provider.dart';
 import 'package:sensetive/pages/home.dart';
 import 'package:sensetive/pages/login.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
@@ -8,6 +9,9 @@ import 'package:sensetive/blocs/home_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
 import 'package:sensetive/services/firebase_authentication.dart';
 import 'package:sensetive/services/backend.dart';
+import 'package:sensetive/pages/welcome.dart';
+import 'package:sensetive/blocs/welcome_bloc.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -77,8 +81,15 @@ class MyApp extends StatelessWidget {
                             jwt: jwtSnapshot.data,
                             child: _buildMaterialApp(Home()),
                           );
+                        else if (!userDataExistsSnapshot.hasData) {
+                          _authenticationBloc.addLogoutUser.add(true);
+                         return Container();
+                        }
                         else
-                          return _buildMaterialApp(Welcome());
+                          return WelcomeBlocProvider(
+                            welcomeBloc: _welcomeBloc,
+                            child: _buildMaterialApp(Welcome()),
+                          );
                       },
                     );
                   } else {
