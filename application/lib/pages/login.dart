@@ -9,8 +9,8 @@ import 'package:sensetive/widgets/background_image.dart';
 
 
 const String _privacyPolicy = 'SenseTive collects personal identification information, name and email, when creating an account and readings collected by the sensor kit.\nThe data is used to manage your account and ensure the application works properly. The data is stored securely until the account is deleted by the user. You have the right to access your personal data, correct any information you believe is inaccurate and erase the data. If you have any questions about SenseTive\'s privacy policy or wish to report a complaint you may contact us at info@negentropy.se.';
-const String backgroundImagePath = 'lib/assets/images/pregnant_woman.jpg';
-
+const String _backgroundImagePath = 'lib/assets/images/pregnant_woman.jpg';
+const String _sensetiveTextImage = 'lib/assets/images/sensetive_text_white.png';
 
 class Login extends StatefulWidget {
   @override
@@ -80,7 +80,7 @@ class _LoginState extends State<Login> {
         body: Stack(
           children: [
             //_backgroundImageWidget(),
-            const BackgroundImage(imagePath: backgroundImagePath),
+            const BackgroundImage(imagePath: _backgroundImagePath),
             SafeArea(
               child: SingleChildScrollView(
                   padding: EdgeInsets.all(16),
@@ -104,7 +104,7 @@ class _LoginState extends State<Login> {
       children: [
         Padding(
           padding: EdgeInsets.all(64),
-          child: Image(image: AssetImage('lib/assets/images/sensetive_text_white.png')),
+          child: Image(image: AssetImage(_sensetiveTextImage)),
         ),
         Container(
           decoration: BoxDecoration(
