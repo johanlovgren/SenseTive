@@ -27,6 +27,10 @@ class DatabaseFileRoutines {
     return File('$path/$uid.user.json');
   }
 
+  Future<bool> deleteAllData() async {
+    throw Exception('Database delete account not implemented');
+  }
+
   /// Get stored user data as JSON
   Future<String> readUserData() async{
     try {

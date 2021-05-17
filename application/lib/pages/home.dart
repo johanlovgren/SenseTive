@@ -20,7 +20,7 @@ class _HomeState extends State<Home> {
   static final List<String> _headings = ['Home', 'History', 'Profile'];
   Widget _currentPage;
   String _currentHeading;
-  int _currentIndex = 2;
+  int _currentIndex = 0;
   List _listPages = [];
 
 

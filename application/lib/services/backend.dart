@@ -6,9 +6,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Backend service used to communicate with the backend
 class BackendService implements BackendApi {
-  final secureStorage = new FlutterSecureStorage();
-  final String loginAddress = 'https://rickebo.com/sensetive/login';
-  final Map<String, String> header = {
+  final _secureStorage = new FlutterSecureStorage();
+  final String _loginAddress = 'https://rickebo.com/sensetive/login';
+  final Map<String, String> _header = {
     'Content-Type': 'application/json',
     'Accept-Encoding': '',
     'Charset': 'utf-8'
@@ -22,12 +22,12 @@ class BackendService implements BackendApi {
   @override
   Future<String> signIn({String method, String token}) async {
     final response = await post(
-        loginAddress,
+        _loginAddress,
         body: jsonEncode({
           "Method": method,
           "Identifier": token
         }),
-        headers: header);
+        headers: _header);
 
     if (response.statusCode == 200) {
       print(json.decode(response.body));
@@ -36,5 +36,9 @@ class BackendService implements BackendApi {
     } else {
       throw(Exception('Server connection error: ${response.statusCode}'));
     }
+  }
+
+  Future<void> deleteAccount() async {
+    throw (Exception('Backend communication not implemented'));
   }
 }
