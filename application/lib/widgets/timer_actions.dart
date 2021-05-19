@@ -42,7 +42,7 @@ class TimerActions extends StatelessWidget {
           },
         ),
         FloatingActionButton(
-          child: Icon(Icons.replay),
+          child: Icon(Icons.stop),
           onPressed: () => timerBloc.add(TimerReset()),
         ),
       ];
@@ -54,7 +54,7 @@ class TimerActions extends StatelessWidget {
           onPressed: () => timerBloc.add(TimerResumed()),
         ),
         FloatingActionButton(
-          child: Icon(Icons.replay),
+          child: Icon(Icons.stop),
           onPressed: () => timerBloc.add(TimerReset()),
         ),
       ];

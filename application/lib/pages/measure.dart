@@ -7,6 +7,7 @@ import 'package:sensetive/widgets/halfcircle_background.dart';
 import 'package:sensetive/widgets/pulsedisplay.dart';
 import 'package:sensetive/widgets/timer_widget.dart';
 import 'package:sensetive/widgets/timer_actions.dart';
+import 'package:sensetive/widgets/measuring_content_widget.dart';
 
 class Measure extends StatefulWidget {
   @override
@@ -65,17 +66,17 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
                   create: (context) => _timerBloc,
                   child: BlocBuilder<TimerBloc, TimerState>(
                     buildWhen: (previousState, state) =>
-                    state.runtimeType != previousState.runtimeType,
+                        state.runtimeType != previousState.runtimeType,
                     builder: (context, state) => state is TimerInitial
                         ? Text(
-                      'Connected to \n SenseTive Sensor',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 35.0,
-                        color: Colors.white,
-                      ),
-                    )
+                            'Connected to \n SenseTive Sensor',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 35.0,
+                              color: Colors.white,
+                            ),
+                          )
                         : TimerWidget(),
                   ),
                 ),
@@ -88,49 +89,15 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
               children: [
                 BlocBuilder<TimerBloc, TimerState>(
                     buildWhen: (previousState, state) =>
-                    state.runtimeType != previousState.runtimeType,
+                        state.runtimeType != previousState.runtimeType,
                     builder: (context, state) => TimerActions()),
                 Padding(
                   padding: const EdgeInsets.only(top: 50.0),
-                  child: !_isMeasuring
-                      ? Text(
-                    'Welcome Sarah! \n Let\'s start recording \n your measurements',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.indigo,
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(0.0, 0.0),
-                          blurRadius: 1.0,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                        )
-                      ],
-                    ),
-                  )
-                      : AnimatedBuilder(
-                    animation: _animation,
-                    builder: (context, _) {
-                      return Container(
-                          height: MediaQuery.of(context).size.height *
-                              0.2,
-                          width: MediaQuery.of(context).size.height *
-                              0.2,
-                          decoration: BoxDecoration(
-                            color: Colors.green,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.green.withOpacity(0.7),
-                                spreadRadius: _animation.value * 1.5,
-                                blurRadius: 5,
-                              )
-                            ],
-                          ),
-                          child: PulseDisplayWidget(_heartRate));
-                    },
-                  ),
+                  child: BlocBuilder<TimerBloc, TimerState>(
+                      buildWhen: (previousState, state) =>
+                          state.runtimeType != previousState.runtimeType,
+                      builder: (context, state) =>
+                          MeasuringContentWidget(_animation)),
                 ),
               ],
             ),
