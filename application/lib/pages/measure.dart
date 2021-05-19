@@ -21,11 +21,7 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
   //Controller for the animation
   AnimationController _animationController;
   Animation _animation;
-  // int _currentTab = 0;
   bool _isMeasuring = true;
-  // static int timeInSec = 0;
-  int _heartRate = 137;
-  // List<int> _momsReading = [];
 
   @override
   void initState() {
