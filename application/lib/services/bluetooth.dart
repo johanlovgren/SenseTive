@@ -17,5 +17,6 @@ class BluetoothService {
 
   void startMeasuring() {
     // TODO Implement this as a dummy
+
   }
 }
