@@ -22,7 +22,7 @@ class BackendService implements BackendApi {
   @override
   Future<String> signIn({String method, String token}) async {
     final response = await post(
-        _loginAddress,
+        Uri.parse(_loginAddress),
         body: jsonEncode({
           "Method": method,
           "Identifier": token

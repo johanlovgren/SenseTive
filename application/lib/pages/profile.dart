@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:sensetive/blocs/authentication_bloc.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
@@ -18,7 +19,7 @@ class Pages {
   static const contractions = 1;
   static const faq = 2;
   static const about_us = 3;
-  static const edit_profile = 0;
+  static const edit_profile = 4;
 }
 
 class Profile extends StatefulWidget {
@@ -66,6 +67,7 @@ class _ProfileState extends State<Profile> {
           ),
           StreamBuilder(
             initialData: AssetImage(blankProfile),
+            stream: _profileBloc.profilePicture,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               return Container(
                 decoration: BoxDecoration(
@@ -81,7 +83,7 @@ class _ProfileState extends State<Profile> {
                 ),
                 child: CircleAvatar(
                   radius: MediaQuery.of(context).size.height * 0.12,
-                  backgroundImage: snapshot.data,
+                  backgroundImage: snapshot.data
                 ),
               );
             },
@@ -137,7 +139,7 @@ class _ProfileState extends State<Profile> {
             icon: Icon(Icons.account_circle_outlined),
             text: Text('Edit profile'),
             onPressed: () {
-              _openNextPage(context: context, nextPageIndex: 0);
+              _openNextPage(context: context, nextPageIndex: Pages.edit_profile);
             }
         ),
         _profileTextButton(

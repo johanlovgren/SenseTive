@@ -37,7 +37,7 @@ class DatabaseFileRoutines {
       final file = await _localUserFile;
       if (!file.existsSync()) {
         print('File does not exist: ${file.absolute}');
-        await writeUserData('{"name": "","email":""}');
+        await writeUserData('{"name": "","email":"", "profilePicturePath":""}');
       }
 
       return await file.readAsString();
@@ -102,15 +102,21 @@ abstract class Database {
 class UserDatabase extends Database {
   String name;
   String email;
-  UserDatabase({this.name, this.email});
+  String profilePicturePath;
+  UserDatabase({this.name, this.email, this.profilePicturePath});
 
   factory UserDatabase.fromJson(Map<String, dynamic> json) =>
-      UserDatabase(name: json['name'], email: json['email']);
+      UserDatabase(
+        name: json['name'],
+        email: json['email'],
+        profilePicturePath: json['profilePicturePath']
+      );
 
   /// Returns the database as JSON
   Map<String, dynamic> toJson() => {
     'name': name,
-    'email': email
+    'email': email,
+    'profilePicturePath': profilePicturePath
   };
 }
 

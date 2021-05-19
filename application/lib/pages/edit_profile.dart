@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 import 'package:sensetive/blocs/authentication_bloc.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
@@ -6,10 +8,19 @@ import 'package:sensetive/services/backend.dart';
 import 'package:sensetive/services/database.dart';
 import 'package:sensetive/utils/jwt_decoder.dart';
 
-const List<String> _editOptions = [
-  'Add profile picture',
-  'Delete account'
-];
+
+class Pages {
+  static const List<String> pages = [
+    'Add profile picture',
+    'Delete account'
+  ];
+  static const List<Icon> icons = [
+    Icon(Icons.camera_alt_outlined),
+    Icon(Icons.delete_forever_outlined)
+  ];
+  static const profile_picture = 0;
+  static const delete_account = 1;
+}
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key key}) : super(key: key);
@@ -21,6 +32,8 @@ class EditProfile extends StatefulWidget {
 class _EditProfileState extends State<EditProfile> {
   AuthenticationBloc _authenticationBloc;
   BackendService _backendService;
+  DatabaseFileRoutines _databaseFileRoutines;
+  UserDatabase _userDatabase;
 
 
   @override
@@ -29,10 +42,18 @@ class _EditProfileState extends State<EditProfile> {
     _backendService = BackendService();
   }
 
+
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _authenticationBloc = AuthenticationBlocProvider.of(context).authenticationBloc;
+    _databaseFileRoutines = DatabaseFileRoutines(
+        uid: DecodedJwt(jwt: HomeBlocProvider.of(context).jwt).uid
+    )
+      ..readUserData().then((json) {
+        _userDatabase = userDatabaseFromJson(json);
+      });
   }
 
   @override
@@ -43,11 +64,11 @@ class _EditProfileState extends State<EditProfile> {
       ),
       body: SafeArea(
         child: ListView.builder(
-          itemCount: _editOptions.length,
+          itemCount: Pages.pages.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text(_editOptions[index]),
-              trailing: Icon(Icons.chevron_right),
+              trailing: Pages.icons[index],
+              title: Text(Pages.pages[index]),
               onTap: () => _openNextPage(context: context, index: index),
             );
           },
@@ -59,13 +80,28 @@ class _EditProfileState extends State<EditProfile> {
   void _openNextPage({BuildContext context, int index}) {
     // TODO Fix delete account and change profile picture
     switch (index) {
-      case 0:
+      case Pages.profile_picture:
+        _selectProfilePicture();
         break;
-      case 1:
+      case Pages.delete_account:
         _deleteAccount();
         break;
       default:
         break;
+    }
+  }
+
+  Future _selectProfilePicture() async {
+    final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
+    File _image;
+    if (pickedFile!= null) {
+      _image = File(pickedFile.path);
+      print(_image);
+      _userDatabase.profilePicturePath = pickedFile.path;
+      // TODO Fix this
+      //_databaseFileRoutines.writeUserData(databaseToJson(_userDatabase));
+    } else {
+      print('No image selected');
     }
   }
 
@@ -90,7 +126,7 @@ class _EditProfileState extends State<EditProfile> {
                 content: Text(e.message),
                 actions: [
                   TextButton(
-                    child: Text('Back'),
+                    child: Text('Close'),
                     onPressed: () => Navigator.of(context).pop(),
                   )
                 ],
