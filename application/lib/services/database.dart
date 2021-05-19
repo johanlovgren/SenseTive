@@ -27,6 +27,15 @@ class DatabaseFileRoutines {
     return File('$path/$uid.user.json');
   }
 
+  void writeProfilePicture(File picture) async {
+    final path = await _localPath;
+    picture.copy('$path/$uid.png');
+  }
+
+  Future<File> readProfilePicture() async {
+    // TODO Continue here
+  }
+
   Future<bool> deleteAllData() async {
     throw Exception('Database delete account not implemented');
   }
@@ -53,6 +62,8 @@ class DatabaseFileRoutines {
     final file = await _localUserFile;
     return file.writeAsString('$json');
   }
+
+
 
   /// Get stored readings ([Reading]) as JSON
   Future<String> readReadings() async {
