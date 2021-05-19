@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sensetive/services/database.dart';
 import 'package:sensetive/utils/jwt_decoder.dart';
@@ -24,14 +23,22 @@ class ProfileBloc {
 
   ProfileBloc({@required this.jwt}) {
     _databaseFileRoutines = DatabaseFileRoutines(uid: DecodedJwt(jwt: jwt).uid);
+    readProfileImage();
     _databaseFileRoutines.readUserData().then((json) {
       _userDatabase = userDatabaseFromJson(json);
       _addName.add(_userDatabase.name);
       _addEmail.add(_userDatabase.email);
-      if (_userDatabase.profilePicturePath != '')
-        _addProfilePicture.add(FileImage(File(_userDatabase.profilePicturePath)));
+    });
+
+  }
+
+  void readProfileImage() {
+    _databaseFileRoutines.readProfileImage().then((imageFile) {
+      if (imageFile != null)
+        _addProfilePicture.add(FileImage(imageFile));
     });
   }
+
   void dispose() {
     _nameController.close();
     _emailController.close();

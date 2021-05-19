@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:sensetive/blocs/authentication_bloc.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
@@ -69,6 +68,7 @@ class _ProfileState extends State<Profile> {
             initialData: AssetImage(blankProfile),
             stream: _profileBloc.profilePicture,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
+
               return Container(
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -181,8 +181,8 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  void _openNextPage({BuildContext context, bool fullscreenDialog = false, int nextPageIndex}) {
-    Navigator.push(
+  void _openNextPage({BuildContext context, bool fullscreenDialog = false, int nextPageIndex}) async {
+    await Navigator.push(
         context,
         MaterialPageRoute(
             fullscreenDialog: fullscreenDialog,
@@ -211,6 +211,11 @@ class _ProfileState extends State<Profile> {
             }
         )
     );
+    if (nextPageIndex == Pages.edit_profile) {
+      imageCache.clear();
+      imageCache.clearLiveImages();
+      _profileBloc.readProfileImage();
+    }
   }
 
 

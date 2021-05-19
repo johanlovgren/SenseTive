@@ -33,7 +33,6 @@ class _EditProfileState extends State<EditProfile> {
   AuthenticationBloc _authenticationBloc;
   BackendService _backendService;
   DatabaseFileRoutines _databaseFileRoutines;
-  UserDatabase _userDatabase;
 
 
   @override
@@ -50,10 +49,7 @@ class _EditProfileState extends State<EditProfile> {
     _authenticationBloc = AuthenticationBlocProvider.of(context).authenticationBloc;
     _databaseFileRoutines = DatabaseFileRoutines(
         uid: DecodedJwt(jwt: HomeBlocProvider.of(context).jwt).uid
-    )
-      ..readUserData().then((json) {
-        _userDatabase = userDatabaseFromJson(json);
-      });
+    );
   }
 
   @override
@@ -97,9 +93,8 @@ class _EditProfileState extends State<EditProfile> {
     if (pickedFile!= null) {
       _image = File(pickedFile.path);
       print(_image);
-      _userDatabase.profilePicturePath = pickedFile.path;
-      // TODO Fix this
-      //_databaseFileRoutines.writeUserData(databaseToJson(_userDatabase));
+      _databaseFileRoutines.writeProfileImage(_image);
+      Navigator.of(context).pop();
     } else {
       print('No image selected');
     }

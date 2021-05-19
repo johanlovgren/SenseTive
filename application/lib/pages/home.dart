@@ -78,7 +78,6 @@ class _HomeState extends State<Home> {
   }
 
   void _changePage(int selectedIndex) {
-    // TODO Fix this
     print('Selected index: $selectedIndex');
     setState(() {
       _currentIndex = selectedIndex;

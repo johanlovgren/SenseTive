@@ -27,15 +27,30 @@ class DatabaseFileRoutines {
     return File('$path/$uid.user.json');
   }
 
-  void writeProfilePicture(File picture) async {
+  /// Writes a profile picture for the current user
+  ///
+  /// [picture] The picture to copy
+  void writeProfileImage(File picture) async {
     final path = await _localPath;
-    picture.copy('$path/$uid.png');
+    await picture.copy('$path/$uid.png');
   }
 
-  Future<File> readProfilePicture() async {
-    // TODO Continue here
+  /// Reads the profile picture for the current user
+  ///
+  /// Returns the profile picture or null if it doesn't exist
+  Future<File> readProfileImage() async {
+    imageCache.clear();
+    try {
+      final path = await _localPath;
+      final image = File('$path/$uid.png');
+      return !image.existsSync() ? null : image;
+    } catch (e) {
+      print('error readProfilePicture: $e');
+      return null;
+    }
   }
 
+  /// Removes all files associated to the current user
   Future<bool> deleteAllData() async {
     throw Exception('Database delete account not implemented');
   }
@@ -62,7 +77,6 @@ class DatabaseFileRoutines {
     final file = await _localUserFile;
     return file.writeAsString('$json');
   }
-
 
 
   /// Get stored readings ([Reading]) as JSON
@@ -113,21 +127,18 @@ abstract class Database {
 class UserDatabase extends Database {
   String name;
   String email;
-  String profilePicturePath;
-  UserDatabase({this.name, this.email, this.profilePicturePath});
+  UserDatabase({this.name, this.email});
 
   factory UserDatabase.fromJson(Map<String, dynamic> json) =>
       UserDatabase(
         name: json['name'],
         email: json['email'],
-        profilePicturePath: json['profilePicturePath']
       );
 
   /// Returns the database as JSON
   Map<String, dynamic> toJson() => {
     'name': name,
     'email': email,
-    'profilePicturePath': profilePicturePath
   };
 }
 
