@@ -4,7 +4,6 @@ import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/blocs/timer_state.dart';
 import 'package:sensetive/classes/ticker.dart';
 import 'package:sensetive/widgets/halfcircle_background.dart';
-import 'package:sensetive/widgets/pulsedisplay.dart';
 import 'package:sensetive/widgets/timer_widget.dart';
 import 'package:sensetive/widgets/timer_actions.dart';
 import 'package:sensetive/widgets/measuring_content_widget.dart';
