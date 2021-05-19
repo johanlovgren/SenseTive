@@ -37,7 +37,8 @@ class TimerActions extends StatelessWidget {
         FloatingActionButton(
           child: Icon(Icons.pause),
           onPressed: () {
-            print(currentState.toString());
+            print("current duration: " +
+                timerBloc.getCurrentDuration().toString());
             return timerBloc.add(TimerPaused());
           },
         ),

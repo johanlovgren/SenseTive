@@ -9,6 +9,7 @@ import 'package:sensetive/classes/ticker.dart';
 class TimerBloc extends Bloc<TimerEvent, TimerState> {
   final Ticker _ticker;
   static const int _duration = 0;
+  int _currentDuration = 0;
 
   StreamSubscription<int> _tickerSubscription;
 
@@ -40,6 +41,10 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     return super.close();
   }
 
+  int getCurrentDuration() {
+    return _currentDuration;
+  }
+
   Stream<TimerState> _mapTimerStartedToState(TimerStarted start) async* {
     yield TimerRunInProgress(start.duration);
     _tickerSubscription?.cancel();
@@ -69,6 +74,7 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
 
   Stream<TimerState> _mapTimerTickedToState(TimerTicked tick) async* {
     print(tick.duration);
+    _currentDuration = tick.duration;
     yield tick.duration < 7200
         ? TimerRunInProgress(tick.duration)
         : TimerRunComplete();
