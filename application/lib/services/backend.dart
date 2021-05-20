@@ -1,13 +1,10 @@
 import 'dart:convert';
-
 import 'backend_api.dart';
 import 'package:http/http.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Backend service used to communicate with the backend
 class BackendService implements BackendApi {
-  final _secureStorage = new FlutterSecureStorage();
-  final String _loginAddress = 'https://rickebo.com/sensetive/login';
+  final String _restApi = 'https://rickebo.com/sensetive';
   final Map<String, String> _header = {
     'Content-Type': 'application/json',
     'Accept-Encoding': '',
@@ -22,7 +19,7 @@ class BackendService implements BackendApi {
   @override
   Future<String> signIn({String method, String token}) async {
     final response = await post(
-        Uri.parse(_loginAddress),
+        Uri.parse(_restApi + '/login'),
         body: jsonEncode({
           "Method": method,
           "Identifier": token
@@ -30,7 +27,6 @@ class BackendService implements BackendApi {
         headers: _header);
 
     if (response.statusCode == 200) {
-      print(json.decode(response.body));
       String jwtToken = jsonDecode(response.body)['token'];
       return jwtToken;
     } else {
@@ -38,7 +34,17 @@ class BackendService implements BackendApi {
     }
   }
 
-  Future<void> deleteAccount() async {
-    throw (Exception('Backend communication not implemented'));
+  /// Asks the backend to delete the current users account
+  ///
+  /// [jwtToken] the users JWT token
+  Future<bool> deleteAccount(String jwtToken) async {
+    final response = await delete(
+      Uri.parse(_restApi + '/account'),
+      headers: _header..addEntries([MapEntry('Authorization', jwtToken)]));
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw(Exception('Server connection error: ${response.statusCode}'));
+    }
   }
 }

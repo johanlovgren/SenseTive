@@ -9,6 +9,7 @@ import 'package:sensetive/services/database.dart';
 import 'package:sensetive/utils/jwt_decoder.dart';
 
 
+/// Dataclass holding all pages and associated icons
 class Pages {
   static const List<String> pages = [
     'Add profile picture',
@@ -22,6 +23,7 @@ class Pages {
   static const delete_account = 1;
 }
 
+/// Page for editing the user account
 class EditProfile extends StatefulWidget {
   const EditProfile({Key key}) : super(key: key);
 
@@ -65,7 +67,7 @@ class _EditProfileState extends State<EditProfile> {
             return ListTile(
               trailing: Pages.icons[index],
               title: Text(Pages.pages[index]),
-              onTap: () => _openNextPage(context: context, index: index),
+              onTap: () => _openSelectedPage(context: context, index: index),
             );
           },
         ),
@@ -73,8 +75,8 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  void _openNextPage({BuildContext context, int index}) {
-    // TODO Fix delete account and change profile picture
+  /// Opens the selected page
+  void _openSelectedPage({BuildContext context, int index}) {
     switch (index) {
       case Pages.profile_picture:
         _selectProfilePicture();
@@ -87,7 +89,8 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-  Future _selectProfilePicture() async {
+  /// Lets the user select a profile picture
+  void _selectProfilePicture() async {
     final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
     File _image;
     if (pickedFile!= null) {
@@ -100,25 +103,31 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
+  /// Lets the user delete his/her account
+  ///
+  /// Asks the backend to delete the users account,
+  /// delete all associated files to the and signs out the user.
+  /// If any error occurs, an dialog with an error message is shown.
   void _deleteAccount() async {
     bool deleteAccount = await _showDeleteDialog();
     if (!deleteAccount) {
       return;
     }
     try {
-      // TODO make sure backend removes firebase account
-      await _backendService.deleteAccount();
-      String uid = DecodedJwt(jwt: HomeBlocProvider.of(context).jwt).uid;
+      String jwt = HomeBlocProvider.of(context).jwt;
+      String uid = DecodedJwt(jwt: jwt).uid;
       DatabaseFileRoutines databaseFileRoutines = DatabaseFileRoutines(uid: uid);
-      await databaseFileRoutines.deleteAllData();
-      _authenticationBloc.addLogoutUser.add(true);
+      // Both delete returns true if successful
+      if (await _backendService.deleteAccount(jwt)
+      && await databaseFileRoutines.deleteAllData())
+        _authenticationBloc.addLogoutUser.add(true);
     } catch (e) {
       showDialog(
           context: context,
           builder: (context) =>
               AlertDialog(
                 title: Text('Error'),
-                content: Text(e.message),
+                content: Text(e.toString()),
                 actions: [
                   TextButton(
                     child: Text('Close'),
@@ -130,6 +139,7 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
+  /// Shows an dialog that ensures that the user wants to delete his/her account
   Future<bool> _showDeleteDialog() {
     return showDialog(
         context: context,
@@ -152,6 +162,5 @@ class _EditProfileState extends State<EditProfile> {
         }
     );
   }
-
 }
 

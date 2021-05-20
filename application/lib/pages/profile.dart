@@ -6,14 +6,15 @@ import 'package:sensetive/blocs/profile_bloc.dart';
 import 'package:sensetive/pages/edit_profile.dart';
 
 final String blankProfile = 'lib/assets/images/blank_profile.png';
-const List<String> _buttons = [
-  'About your pregnancy',
-  'Know your contractions',
-  'FAQ',
-  'About us'
-];
 
+/// Dataclass holding information about next pages and how to get there.
 class Pages {
+  static const buttons = [
+    'About your pregnancy',
+    'Know your contractions',
+    'FAQ',
+    'About us'
+  ];
   static const pregnancy = 0;
   static const contractions = 1;
   static const faq = 2;
@@ -29,7 +30,6 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   AuthenticationBloc _authenticationBloc;
   ProfileBloc _profileBloc;
-
 
   @override
   void initState() {
@@ -56,6 +56,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  /// Widget that contains the users profile information
   Widget _buildProfileInformation() {
     return Container(
       color: Colors.grey.shade200,
@@ -121,6 +122,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  /// Widget that contains the buttons associated to profile actions
   Row _profileButtonRow() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -154,6 +156,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  /// Text button used for profile actions
   TextButton _profileTextButton({Icon icon, Text text, @required VoidCallback onPressed}) {
     return TextButton(
       onPressed: onPressed,
@@ -166,14 +169,15 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  /// Widget containing the information buttons
   Widget _buildInformationButtons() {
     return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
-      itemCount: _buttons.length,
+      itemCount: Pages.buttons.length,
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
-          title: Text(_buttons[index]),
+          title: Text(Pages.buttons[index]),
           trailing: Icon(Icons.chevron_right),
           onTap: () => _openNextPage(context: context, nextPageIndex: index),
         );
@@ -181,6 +185,7 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  /// Used to open a new page
   void _openNextPage({BuildContext context, bool fullscreenDialog = false, int nextPageIndex}) async {
     await Navigator.push(
         context,
@@ -217,18 +222,17 @@ class _ProfileState extends State<Profile> {
       _profileBloc.readProfileImage();
     }
   }
-
-
 }
 
+/// Dummy page used for non implemented pages
 Widget dummy(int index) {
   return Scaffold(
       appBar: AppBar(
-        title: Text(_buttons[index]),
+        title: Text(Pages.buttons[index]),
       ),
       body: SafeArea(
         child: ListView.builder(
-            itemCount: 20,
+            itemCount: 10,
             itemBuilder: (BuildContext context, int index) {
               return expansionTile(index);
             }
@@ -237,6 +241,7 @@ Widget dummy(int index) {
   );
 }
 
+/// Dummy tile used for non implemented pages
 Widget expansionTile(int nr) {
   return ExpansionTile(
     title: Text('Question $nr'),

@@ -33,7 +33,7 @@ class ProfileBloc {
   }
 
   void readProfileImage() {
-    _databaseFileRoutines.readProfileImage().then((imageFile) {
+    _databaseFileRoutines.profileImageFile.then((imageFile) {
       if (imageFile != null)
         _addProfilePicture.add(FileImage(imageFile));
     });

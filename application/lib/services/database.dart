@@ -38,8 +38,7 @@ class DatabaseFileRoutines {
   /// Reads the profile picture for the current user
   ///
   /// Returns the profile picture or null if it doesn't exist
-  Future<File> readProfileImage() async {
-    imageCache.clear();
+  Future<File> get profileImageFile async {
     try {
       final path = await _localPath;
       final image = File('$path/$uid.png');
@@ -52,7 +51,16 @@ class DatabaseFileRoutines {
 
   /// Removes all files associated to the current user
   Future<bool> deleteAllData() async {
-    throw Exception('Database delete account not implemented');
+    final profileImage = await profileImageFile;
+    if (profileImage != null)
+      profileImage.delete();
+    final userFile = await _localUserFile;
+    if (userFile.existsSync())
+      userFile.delete();
+    final readingsFile = await _localReadingsFile;
+    if (readingsFile.existsSync())
+      readingsFile.delete();
+    return true;
   }
 
   /// Get stored user data as JSON
