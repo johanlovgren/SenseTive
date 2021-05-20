@@ -101,8 +101,8 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

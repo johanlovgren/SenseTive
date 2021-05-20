@@ -62,7 +62,7 @@ class TimerActions extends StatelessWidget {
     if (currentState is TimerRunComplete) {
       return [
         FloatingActionButton(
-          child: Icon(Icons.replay),
+          child: Icon(Icons.stop),
           onPressed: () => timerBloc.add(TimerReset()),
         ),
       ];

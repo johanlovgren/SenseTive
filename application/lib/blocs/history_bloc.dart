@@ -1,19 +1,22 @@
 import 'dart:async';
 import 'package:sensetive/models/reading_models.dart';
 import 'package:sensetive/services/database.dart';
+import 'package:sensetive/utils/jwt_decoder.dart';
 
 /// BLoC for the [History] page
 class HistoryBloc {
   /// List containing the sorting alternatives, order does matter,
   /// see _filterReadings()
+
   final List<String> sortAlternatives = const [
     'Most recent',
     'Oldest',
     'Longest',
     'Shortest'
   ];
-  DatabaseFileRoutines _databaseFileRoutines = DatabaseFileRoutines();
-  Database _readingDatabase;
+  final String jwt;
+  DatabaseFileRoutines _databaseFileRoutines;
+  ReadingsDatabase _readingDatabase;
 
   /// Stream used for the list of readings
   final StreamController<List<Reading>> _readingListController = StreamController<List<Reading>>();
@@ -32,9 +35,10 @@ class HistoryBloc {
   Sink<String> get addSort => _sortController.sink;
   Stream<String> get sort => _sortController.stream;
 
-  HistoryBloc() {
+  HistoryBloc({this.jwt}) {
+    _databaseFileRoutines = DatabaseFileRoutines(uid: DecodedJwt(jwt: jwt).uid);
     _databaseFileRoutines.readReadings().then((readingsJson) {
-      _readingDatabase = databaseFromJson(readingsJson);
+      _readingDatabase = readingsDatabaseFromJson(readingsJson);
       _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
       _addReadingList.add(_readingDatabase.readings);
     });

@@ -11,7 +11,7 @@ class FirebaseAuthenticationService implements FirebaseAuthenticationApi {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   /// Stream for login a user
-  final StreamController<LoginEvent> _loginController = StreamController<LoginEvent>();
+  final StreamController<LoginEvent> _loginController = StreamController<LoginEvent>.broadcast();
   Sink<LoginEvent> get addLoginUser => _loginController.sink;
   Stream<LoginEvent> get loginUser => _loginController.stream;
 

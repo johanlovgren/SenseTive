@@ -1,9 +1,16 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:sensetive/blocs/login_bloc.dart';
 import 'package:sensetive/services/firebase_authentication.dart';
+import 'package:sensetive/widgets/background_image.dart';
+
+
+const String _privacyPolicy = 'SenseTive collects personal identification information, name and email, when creating an account and readings collected by the sensor kit.\nThe data is used to manage your account and ensure the application works properly. The data is stored securely until the account is deleted by the user. You have the right to access your personal data, correct any information you believe is inaccurate and erase the data. If you have any questions about SenseTive\'s privacy policy or wish to report a complaint you may contact us at info@negentropy.se.';
+const String _backgroundImagePath = 'lib/assets/images/pregnant_woman.jpg';
+const String _sensetiveTextImage = 'lib/assets/images/sensetive_text_white.png';
 
 class Login extends StatefulWidget {
   @override
@@ -36,17 +43,23 @@ class _LoginState extends State<Login> {
           actions: actions);
     });
 
-    _loginBloc.createAccountError.listen((errorMessage) {
-      _showAlertDialog(
-          'Create account error',
-          errorMessage,
-          actions: _defaultAlertButtons()
-      );
+    _loginBloc.createAccountDialog.listen((message) {
+      if (message.contains('error'))
+        _showAlertDialog(
+            'Create account error',
+            message,
+            actions: _defaultAlertButtons()
+        );
+      else
+        _showAlertDialog(
+            'Account created',
+            'Email verification sent',
+            actions: _defaultAlertButtons());
     });
-    errorSubscription = _loginBloc.authenticationApi.loginError.listen((errorMessage) {
+    errorSubscription = _loginBloc.authenticationApi.loginError.listen((message) {
       _showAlertDialog(
           'Login error',
-          errorMessage,
+          message,
           actions: _defaultAlertButtons()
       );
     });
@@ -66,7 +79,8 @@ class _LoginState extends State<Login> {
         resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
-            _backgroundImageWidget(),
+            //_backgroundImageWidget(),
+            const BackgroundImage(imagePath: _backgroundImagePath),
             SafeArea(
               child: SingleChildScrollView(
                   padding: EdgeInsets.all(16),
@@ -82,26 +96,7 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Container _backgroundImageWidget() {
-    return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-              fit: BoxFit.fitHeight,
-              image: AssetImage('lib/assets/images/pregnant_woman.jpg')
-          )
-      ),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-            sigmaX: 3.0,
-            sigmaY: 3.0
-        ),
-        child: Container(
-          decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
-        ),
-      ),
-    );
-  }
-
+  /// Builds the Login widget
   Column _buildLoginWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -109,7 +104,7 @@ class _LoginState extends State<Login> {
       children: [
         Padding(
           padding: EdgeInsets.all(64),
-          child: Image(image: AssetImage('lib/assets/images/sensetive_text_white.png')),
+          child: Image(image: AssetImage(_sensetiveTextImage)),
         ),
         Container(
           decoration: BoxDecoration(
@@ -125,6 +120,7 @@ class _LoginState extends State<Login> {
     );
   }
 
+  /// Builds the login form widgets
   Column _loginFormWidget() {
     return Column(
       children: [
@@ -149,7 +145,6 @@ class _LoginState extends State<Login> {
             builder: (BuildContext context, AsyncSnapshot snapshot)
             => TextField(
               obscureText: true,
-              cursorColor: Colors.black,
               decoration: InputDecoration(
                   labelText: 'Password',
                   icon: Icon(
@@ -162,33 +157,20 @@ class _LoginState extends State<Login> {
             )
         ),
         SizedBox(height: 48,),
-        _buildLoginAndCreateButtons()
+        _buttonsLogin(),
+        //_buildLoginAndCreateButtons()
       ],
     );
   }
 
-  Widget _buildLoginAndCreateButtons() {
-    return StreamBuilder(
-      initialData: 'Login',
-      stream: _loginBloc.loginOrCreateButton,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.data == 'Login') {
-          return _buttonsLogin();
-        } else if (snapshot.data == 'Create Account') {
-          return _buttonsCreateAccount();
-        }
-        return Container(width: 0, height: 0,);
-      },
-    );
-  }
-
+  /// Builds the login/create account buttons
   Widget _buttonsLogin() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         StreamBuilder(
           initialData: false,
-          stream: _loginBloc.enableLoginCreateButton,
+          stream: _loginBloc.enableLoginButton,
           builder: (BuildContext context, AsyncSnapshot snapshot)
           =>  ElevatedButton(
             child: Text('Login'),
@@ -199,45 +181,165 @@ class _LoginState extends State<Login> {
         ),
         TextButton(
           child: Text('Create Account'),
-          onPressed: (){
-            _loginBloc.loginOrCreateButtonChanged.add('Create Account');
+          onPressed: () async {
+            bool createAccount = await _showCreateAccountDialog();
+            if (createAccount != null && createAccount) {
+              _loginBloc.loginOrCreateChanged.add('Create Account');
+            }
           },
         )
       ],
     );
   }
 
-  Widget _buttonsCreateAccount() {
+  /// Shows the create account dialog, if the user enters valid credentials
+  /// True is returned to create an account
+  Future<bool> _showCreateAccountDialog() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Create account'),
+            content: _createAccountDialogContent(context),
+            actions: [
+              TextButton(
+                child: Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+              StreamBuilder(
+                initialData: false,
+                stream: _loginBloc.enableCreateButton,
+                builder: (BuildContext context, AsyncSnapshot snapshot)
+                =>  ElevatedButton(
+                  child: Text('Create Account'),
+                  onPressed: snapshot.data
+                      ? () => Navigator.of(context).pop(true)
+                      : null,
+                ),
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  /// Builds the create account dialog content
+  Column _createAccountDialogContent(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
       children: [
         StreamBuilder(
-          initialData: false,
-          stream: _loginBloc.enableLoginCreateButton,
-          builder: (BuildContext context, AsyncSnapshot snapshot)
-          => ElevatedButton(
-            child: Text('Create Account'),
-            onPressed: snapshot.data
-                ? () {
-              _loginBloc.loginOrCreateChanged.add('Create Account');
-              _loginBloc.loginOrCreateButtonChanged.add('Login');
-              _showAlertDialog('Account created', 'Email verification sent', actions: _defaultAlertButtons());
-            }
-                : null,
-          ),
+            stream: _loginBloc.emailCreateAccount,
+            builder: (BuildContext context, AsyncSnapshot snapshot) =>
+                TextField(
+                  keyboardType: TextInputType.emailAddress,
+                  onChanged: _loginBloc.emailChangedCreateAccount.add,
+                  decoration: InputDecoration(
+                      labelText: 'Email Address',
+                      errorText: snapshot.error,
+                      icon: Icon(
+                        Icons.email_outlined,
+                        color: Colors.black,
+                      )
+                  ),
+                )
         ),
-        TextButton(
-          child: Text('Login'),
-          onPressed: () {
-            _loginBloc.loginOrCreateButtonChanged.add('Login');
-          },
+        StreamBuilder(
+          stream: _loginBloc.passwordCreateAccount,
+          builder: (BuildContext context, AsyncSnapshot snapshot) =>
+              TextField(
+                obscureText: true,
+                onChanged: _loginBloc.passwordChangedCreateAccount.add,
+                decoration: InputDecoration(
+                    labelText: 'Password',
+                    errorText: snapshot.error,
+                    icon: Icon(
+                      Icons.security,
+                      color: Colors.black,
+                    )
+                ),
+              ),
+        ),
+        StreamBuilder(
+          stream: _loginBloc.repeatedPasswordCreateAccount,
+          builder: (BuildContext context, AsyncSnapshot snapshot) =>
+              TextField(
+                obscureText: true,
+                onChanged: _loginBloc.repeatedPasswordChangedCreateAccount.add,
+                decoration: InputDecoration(
+                    labelText: 'Repeat Password',
+                    errorText: snapshot.error,
+                    icon: Icon(
+                      Icons.security,
+                      color: Colors.black,
+                    )
+                ),
+              ),
+        ),
+        Row(
+          children: [
+            StreamBuilder(
+              stream: _loginBloc.acceptPrivacy,
+              initialData: false,
+              builder: (context, snapshot) {
+                return Checkbox(
+                  value: snapshot.data,
+                  onChanged: (newValue) {
+                    _loginBloc.acceptPrivacyChanged.add(newValue);
+                  },
+                );
+              },
+            ),
+            Container(
+                width: 200,
+                child: RichText(
+                  text: TextSpan(
+                      children: [
+                        TextSpan(
+                            text: 'I accept the ',
+                            style: TextStyle(color: Colors.black)
+                        ),
+                        TextSpan(
+                            text:'Privacy Policy ',
+                            recognizer: TapGestureRecognizer()..onTap = () {
+                              return showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                        title: Text('Privacy Policy'),
+                                        content: SingleChildScrollView(
+                                          child: Text(
+                                              _privacyPolicy
+                                          ),
+                                        ),
+                                        actions: _defaultAlertButtons()
+                                    );
+                                  }
+                              );
+                            },
+                            style: TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline
+                            )
+                        ),
+                        TextSpan(
+                            text: 'in order to create an account.',
+                            style: TextStyle(color: Colors.black)
+                        ),
+                      ]
+                  ),
+                )
+            )
+          ],
         )
       ],
     );
   }
 
   Future<void> _showAlertDialog(String alertHeader, String alertMessage,
-      {@required List<Widget> actions}) async{
+      {@required List<Widget> actions}) async {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -246,7 +348,7 @@ class _LoginState extends State<Login> {
               content: SingleChildScrollView(
                 child: ListBody(
                   children: [
-                    Text(alertMessage)
+                    Text(alertMessage),
                   ],
                 ),
               ),
@@ -266,3 +368,5 @@ class _LoginState extends State<Login> {
     ];
   }
 }
+
+
