@@ -33,6 +33,7 @@ class BluetoothService {
   /// Starts a measuring session.
   ///
   /// The measuring adds a datapoint to the data stream each second
+  /// and will run until [stopMeasuring] is called.
   void startMeasuring() async {
       _measuring = true;
       while (_measuring) {
