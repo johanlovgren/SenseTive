@@ -56,7 +56,8 @@ class MeasuringContentWidget extends StatelessWidget {
                 ],
               ),
               child:
-                  PulseDisplayWidget(measuringBloc.getMotherHeartRates().last));
+                  // TODO Fix animation
+                  PulseDisplayWidget(140));
         },
       );
     }

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:sensetive/blocs/authentication_bloc.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
+import 'package:sensetive/blocs/measuring_bloc.dart';
+import 'package:sensetive/blocs/measuring_bloc_provider.dart';
+import 'package:sensetive/blocs/timer_bloc.dart';
+import 'package:sensetive/classes/ticker.dart';
 import 'history.dart';
 import 'package:sensetive/blocs/home_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
@@ -19,6 +23,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   AuthenticationBloc _authenticationBloc;
   HomeBloc _homeBloc;
+  MeasuringBloc _measuringBloc = MeasuringBloc(timerBloc: TimerBloc(ticker: Ticker()));
 
   static final List<String> _headings = ['Home', 'History', 'Profile'];
   Widget _currentPage;
@@ -34,7 +39,10 @@ class _HomeState extends State<Home> {
     super.initState();
     // Todo Add pages in _listPages and set current page
     _listPages
-      ..add(Measure())
+      ..add(MeasuringBlocProvider(
+        measuringBloc: _measuringBloc,
+        child: Measure(),
+      ))
       ..add(History())
       ..add(Container()); // TODO add profile page
     _currentPage = _listPages[_currentIndex];
@@ -52,6 +60,7 @@ class _HomeState extends State<Home> {
   @override
   void dispose() {
     _homeBloc.dispose();
+    _measuringBloc.dispose();
     super.dispose();
   }
 

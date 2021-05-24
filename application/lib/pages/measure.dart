@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sensetive/blocs/measuring_bloc_provider.dart';
 import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/blocs/timer_state.dart';
 import 'package:sensetive/classes/ticker.dart';
@@ -17,8 +18,8 @@ class Measure extends StatefulWidget {
 class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
   ///Bloc for controlling the timer
   ///See [TimerBloc]
-  final TimerBloc _timerBloc = TimerBloc(ticker: Ticker());
-  final MeasuringBloc _measuringBloc = MeasuringBloc();
+  TimerBloc _timerBloc;
+  MeasuringBloc _measuringBloc;
 
   //Controller for the animation
   AnimationController _animationController;
@@ -36,6 +37,14 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
     super.initState();
   }
 
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _measuringBloc = MeasuringBlocProvider.of(context).measuringBloc;
+    _timerBloc = _measuringBloc.timerBloc;
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -45,61 +54,63 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(0.0),
-      child: Column(
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              Align(
-                alignment: Alignment.topCenter,
-                child: HalfcircleWidget(_isMeasuring),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height * 0.35,
-                alignment: Alignment.center,
-                child: BlocProvider(
-                  create: (context) => _timerBloc,
-                  child: BlocBuilder<TimerBloc, TimerState>(
-                    buildWhen: (previousState, state) =>
-                        state.runtimeType != previousState.runtimeType,
-                    builder: (context, state) => state is TimerInitial
-                        ? Text(
-                            'Connected to \n SenseTive Sensor',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 35.0,
-                              color: Colors.white,
-                            ),
-                          )
-                        : TimerWidget(),
-                  ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(0.0),
+        child: Column(
+          children: <Widget>[
+            Stack(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: HalfcircleWidget(_isMeasuring),
                 ),
-              ),
-            ],
-          ),
-          BlocProvider(
-            create: (context) => _timerBloc,
-            child: Column(
-              children: [
-                BlocBuilder<TimerBloc, TimerState>(
-                    buildWhen: (previousState, state) =>
-                        state.runtimeType != previousState.runtimeType,
-                    builder: (context, state) => TimerActions()),
-                Padding(
-                  padding: const EdgeInsets.only(top: 50.0),
-                  child: BlocBuilder<TimerBloc, TimerState>(
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  alignment: Alignment.center,
+                  child: BlocProvider(
+                    create: (context) => _timerBloc,
+                    child: BlocBuilder<TimerBloc, TimerState>(
                       buildWhen: (previousState, state) =>
-                          state.runtimeType != previousState.runtimeType,
-                      builder: (context, state) =>
-                          MeasuringContentWidget(_animation, _measuringBloc)),
+                      state.runtimeType != previousState.runtimeType,
+                      builder: (context, state) => state is TimerInitial
+                          ? Text(
+                        'Connected to \n SenseTive Sensor',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 35.0,
+                          color: Colors.white,
+                        ),
+                      )
+                          : TimerWidget(),
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
+            BlocProvider(
+              create: (context) => _timerBloc,
+              child: Column(
+                children: [
+                  BlocBuilder<TimerBloc, TimerState>(
+                      buildWhen: (previousState, state) =>
+                      state.runtimeType != previousState.runtimeType,
+                      builder: (context, state) => TimerActions()),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 50.0),
+                    child: BlocBuilder<TimerBloc, TimerState>(
+                        buildWhen: (previousState, state) =>
+                        state.runtimeType != previousState.runtimeType,
+                        builder: (context, state) =>
+                            MeasuringContentWidget(_animation, _measuringBloc)),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:sensetive/blocs/measuring_bloc.dart';
+import 'package:sensetive/blocs/measuring_bloc_provider.dart';
 import 'package:sensetive/blocs/timer_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/blocs/timer_state.dart';
+
+class TimerEvents {
+  static const start = 0;
+  static const stop = 1;
+  static const pause = 2;
+}
 
 class TimerActions extends StatelessWidget {
   @override
@@ -11,12 +19,14 @@ class TimerActions extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: _mapStateToActionButtons(
         timerBloc: BlocProvider.of<TimerBloc>(context),
+        measuringBloc: MeasuringBlocProvider.of(context).measuringBloc
       ),
     );
   }
 
   List<Widget> _mapStateToActionButtons({
     TimerBloc timerBloc,
+    MeasuringBloc measuringBloc
   }) {
     final TimerState currentState = timerBloc.state;
     if (currentState is TimerInitial || currentState is TimerRunComplete) {
@@ -26,8 +36,10 @@ class TimerActions extends StatelessWidget {
           child: FloatingActionButton(
             backgroundColor: Colors.indigo.shade300,
             child: Icon(Icons.play_arrow),
-            onPressed: () =>
-                timerBloc.add(TimerStarted(duration: currentState.duration)),
+            onPressed: () {
+              measuringBloc.addTimerEvent.add(TimerEvents.start);
+              timerBloc.add(TimerStarted(duration: currentState.duration));
+            }
           ),
         ),
       ];
@@ -37,6 +49,7 @@ class TimerActions extends StatelessWidget {
         FloatingActionButton(
           child: Icon(Icons.pause),
           onPressed: () {
+            measuringBloc.addTimerEvent.add(TimerEvents.pause);
             print("current duration: " +
                 timerBloc.getCurrentDuration().toString());
             return timerBloc.add(TimerPaused());
@@ -44,7 +57,10 @@ class TimerActions extends StatelessWidget {
         ),
         FloatingActionButton(
           child: Icon(Icons.stop),
-          onPressed: () => timerBloc.add(TimerReset()),
+          onPressed: () {
+            measuringBloc.addTimerEvent.add(TimerEvents.stop);
+            timerBloc.add(TimerReset());
+          }
         ),
       ];
     }
@@ -56,7 +72,10 @@ class TimerActions extends StatelessWidget {
         ),
         FloatingActionButton(
           child: Icon(Icons.stop),
-          onPressed: () => timerBloc.add(TimerReset()),
+          onPressed: () {
+            measuringBloc.addTimerEvent.add(TimerEvents.stop);
+            timerBloc.add(TimerReset());
+          }
         ),
       ];
     }
