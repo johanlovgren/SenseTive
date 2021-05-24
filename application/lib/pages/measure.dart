@@ -7,6 +7,7 @@ import 'package:sensetive/widgets/halfcircle_background.dart';
 import 'package:sensetive/widgets/timer_widget.dart';
 import 'package:sensetive/widgets/timer_actions.dart';
 import 'package:sensetive/widgets/measuring_content_widget.dart';
+import 'package:sensetive/blocs/measuring_bloc.dart';
 
 class Measure extends StatefulWidget {
   @override
@@ -17,6 +18,7 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
   ///Bloc for controlling the timer
   ///See [TimerBloc]
   final TimerBloc _timerBloc = TimerBloc(ticker: Ticker());
+  final MeasuringBloc _measuringBloc = MeasuringBloc();
 
   //Controller for the animation
   AnimationController _animationController;
@@ -92,7 +94,7 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
                       buildWhen: (previousState, state) =>
                           state.runtimeType != previousState.runtimeType,
                       builder: (context, state) =>
-                          MeasuringContentWidget(_animation)),
+                          MeasuringContentWidget(_animation, _measuringBloc)),
                 ),
               ],
             ),

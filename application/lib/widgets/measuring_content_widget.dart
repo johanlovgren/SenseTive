@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:sensetive/blocs/measuring_bloc.dart';
 import 'package:sensetive/blocs/timer_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/blocs/timer_state.dart';
+import 'package:sensetive/pages/measure.dart';
 import 'package:sensetive/widgets/pulsedisplay.dart';
 
 class MeasuringContentWidget extends StatelessWidget {
   final Animation animation;
+  final MeasuringBloc measuringBloc;
 
-  MeasuringContentWidget(this.animation);
+  MeasuringContentWidget(this.animation, this.measuringBloc);
 
   Widget build(BuildContext context) {
     return _measureContent(
@@ -52,7 +55,8 @@ class MeasuringContentWidget extends StatelessWidget {
                   )
                 ],
               ),
-              child: PulseDisplayWidget(137));
+              child:
+                  PulseDisplayWidget(measuringBloc.getMotherHeartRates().last));
         },
       );
     }
