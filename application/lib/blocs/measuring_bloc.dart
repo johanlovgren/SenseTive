@@ -18,6 +18,7 @@ class MeasuringBloc {
   Stream<int> get timerEvent => _timerEventController.stream;
 
   MeasuringBloc({@required this.timerBloc}) {
+
     _bluetoothService.motherHeartRate.listen((heartRate) {
       _addHeartRate(heartRate, _motherHeartRates);
       print(_motherHeartRates);
@@ -29,16 +30,18 @@ class MeasuringBloc {
     timerEvent.listen((event) {
       switch (event){
         case TimerEvents.start:
+          _bluetoothService.startMeasuring();
           // TODO Implement this
           break;
         case TimerEvents.pause:
         // TODO Implement this
+        _bluetoothService.stopMeasuring();
           break;
         case TimerEvents.stop:
         // TODO Implement this
-          break;
+        _bluetoothService.stopMeasuring();
+        break;
       }
-      // TODO Fix this
     });
   }
 
