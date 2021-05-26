@@ -3,13 +3,13 @@ import 'home_bloc.dart';
 
 /// Provider used to pass data between widget/states
 ///
-/// [uid] user id for the current user
+/// [jwt] user id for the current user
 /// [homeBloc] BLoC for Home Widget
 class HomeBlocProvider extends InheritedWidget {
   final HomeBloc homeBloc;
-  final String uid;
+  final String jwt;
 
-  const HomeBlocProvider({Key key, Widget child, this.homeBloc, this.uid})
+  const HomeBlocProvider({Key key, Widget child, this.homeBloc, this.jwt})
       : super(key: key, child: child);
 
   static HomeBlocProvider of(BuildContext context) {

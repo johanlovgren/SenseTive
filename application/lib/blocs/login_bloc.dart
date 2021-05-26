@@ -12,6 +12,43 @@ class LoginBloc with Validators {
   bool _emailValid = false;
   bool _passwordValid = false;
 
+  String _emailCreateAccount;
+  String _passwordCreateAccount;
+  String _passwordRepeated;
+  bool _emailCreateAccountValid = false;
+  bool _passwordCreateAccountValid = false;
+  bool _repeatedPasswordValid = false;
+  bool _acceptPrivacy = false;
+
+  /// Stream for email when creating an account
+  final StreamController<String> _emailCreateAccountController =
+  StreamController<String>.broadcast();
+  Sink<String> get emailChangedCreateAccount => _emailCreateAccountController.sink;
+  Stream<String> get emailCreateAccount => _emailCreateAccountController.stream.transform(validateEmail);
+
+  /// Stream for privacy checkbox
+  final StreamController<bool> _acceptPrivacyController = StreamController<bool>.broadcast();
+  Sink<bool> get acceptPrivacyChanged => _acceptPrivacyController.sink;
+  Stream<bool> get acceptPrivacy => _acceptPrivacyController.stream;
+
+  /// Stream for password when creating an account
+  final StreamController<String> _passwordCreateAccountController =
+  StreamController<String>.broadcast();
+  Sink<String> get passwordChangedCreateAccount => _passwordCreateAccountController.sink;
+  Stream<String> get passwordCreateAccount => _passwordCreateAccountController.stream.transform(validatePassword);
+
+  /// Stream for the repeated password when creating an account
+  final StreamController<String> _repeatedPasswordCreateAccountController =
+  StreamController<String>.broadcast();
+  Sink<String> get repeatedPasswordChangedCreateAccount => _repeatedPasswordCreateAccountController.sink;
+  Stream<String> get repeatedPasswordCreateAccount => _repeatedPasswordCreateAccountController.stream;
+
+  /// Stream for create account button
+  final StreamController<bool> _enableCreateButtonController =
+  StreamController<bool>.broadcast();
+  Sink<bool> get enableCreateButtonChanged => _enableCreateButtonController.sink;
+  Stream<bool> get enableCreateButton => _enableCreateButtonController.stream;
+
   /// Stream for controlling the email that have been input by the user
   final StreamController<String> _emailController =
   StreamController<String>.broadcast();
@@ -25,10 +62,10 @@ class LoginBloc with Validators {
   Stream<String> get password => _passwordController.stream.transform(validatePassword);
 
   /// Stream for checking when login/create button is to be enabled
-  final StreamController<bool> _enableLoginCreateButtonController =
+  final StreamController<bool> _enableLoginButtonController =
   StreamController<bool>.broadcast();
-  Sink<bool> get enableLoginCreateButtonChanged => _enableLoginCreateButtonController.sink;
-  Stream<bool> get enableLoginCreateButton => _enableLoginCreateButtonController.stream;
+  Sink<bool> get enableLoginButtonChanged => _enableLoginButtonController.sink;
+  Stream<bool> get enableLoginButton => _enableLoginButtonController.stream;
 
   /// Stream for switching login and create account buttons
   final StreamController<String> _loginOrCreateButtonController =
@@ -49,30 +86,70 @@ class LoginBloc with Validators {
   Stream<String> get loginError => _loginErrorController.stream;
 
   /// Stream for create account errors
-  final StreamController<String> _createAccountErrorController =
+  final StreamController<String> _createAccountDialogController =
   StreamController<String>();
-  Sink<String> get addCreateAccountError => _createAccountErrorController.sink;
-  Stream<String> get createAccountError => _createAccountErrorController.stream;
+  Sink<String> get addCreateAccountDialog => _createAccountDialogController.sink;
+  Stream<String> get createAccountDialog => _createAccountDialogController.stream;
 
   LoginBloc(this.authenticationApi) {
     _startListenersIfEmailPasswordAreValid();
-
   }
 
   /// Dispose and close all controllers
   void dispose() {
     _passwordController.close();
     _emailController.close();
-    _enableLoginCreateButtonController.close();
+    _enableLoginButtonController.close();
     _loginOrCreateButtonController.close();
     _loginOrCreateController.close();
     _loginErrorController.close();
-    _createAccountErrorController.close();
-    authenticationApi.dispose();
+    _createAccountDialogController.close();
+    _emailCreateAccountController.close();
+    _passwordCreateAccountController.close();
+    _repeatedPasswordCreateAccountController.close();
+    _enableCreateButtonController.close();
+    _acceptPrivacyController.close();
   }
 
   /// Start listeners for controllers
   void _startListenersIfEmailPasswordAreValid() {
+    acceptPrivacy.listen((value) {
+      _acceptPrivacy = value;
+      _updateEnableCreateAccountStream();
+    });
+    emailCreateAccount.listen((email) {
+      _emailCreateAccount = email;
+      _emailCreateAccountValid = true;
+    }).onError((error) {
+      _emailCreateAccount = '';
+      _emailCreateAccountValid = false;
+      _updateEnableCreateAccountStream();
+    });
+    passwordCreateAccount.listen((password) {
+      _passwordCreateAccount = password;
+      _passwordCreateAccountValid = true;
+      if (password != _passwordRepeated) {
+        _repeatedPasswordCreateAccountController.addError('Password does not match');
+      }
+    }).onError((error) {
+      _passwordCreateAccount = '';
+      _passwordCreateAccountValid = false;
+      repeatedPasswordChangedCreateAccount.add('');
+      _updateEnableCreateAccountStream();
+    });
+    repeatedPasswordCreateAccount.listen((password) {
+      if (password.length > 0 && password != _passwordCreateAccount) {
+        _repeatedPasswordCreateAccountController.addError('Password does not match');
+        return;
+      }
+      _passwordRepeated = password;
+      _repeatedPasswordValid = true;
+      _updateEnableCreateAccountStream();
+    }).onError((error) {
+      _passwordRepeated = '';
+      _repeatedPasswordValid = false;
+      _updateEnableCreateAccountStream();
+    });
     email.listen((email) {
       _email = email;
       _emailValid = true;
@@ -100,12 +177,20 @@ class LoginBloc with Validators {
     });
   }
 
+  void _updateEnableCreateAccountStream() {
+    if (_emailCreateAccountValid && _passwordCreateAccountValid
+        && _repeatedPasswordValid && _acceptPrivacy) {
+      enableCreateButtonChanged.add(true);
+    } else {
+      enableCreateButtonChanged.add(false);
+    }
+  }
   /// Used to update login/create button
   void _updateEnableLoginCreateButtonStream() {
     if (_emailValid && _passwordValid) {
-      enableLoginCreateButtonChanged.add(true);
+      enableLoginButtonChanged.add(true);
     } else {
-      enableLoginCreateButtonChanged.add(false);
+      enableLoginButtonChanged.add(false);
     }
   }
 
@@ -141,17 +226,18 @@ class LoginBloc with Validators {
   /// On error, exception is thrown
   Future<String> _createAccount() async {
     String _result = '';
-    if (_emailValid && _passwordValid) {
+    if (_emailCreateAccountValid && _passwordCreateAccountValid && _acceptPrivacy) {
       await authenticationApi
-          .createUserWithEmailAndPassword(email: _email, password: _password)
+          .createUserWithEmailAndPassword(email: _emailCreateAccount, password: _passwordCreateAccount)
           .then((user) async {
         print('Created user: $user');
         _result = 'Created user: $user';
         await authenticationApi.sendEmailVerification();
         authenticationApi.signOut();
+        addCreateAccountDialog.add('Successful');
       }).catchError((error) {
         print('Creating user error: $error');
-        addCreateAccountError.add(error.message);
+        addCreateAccountDialog.add(error.message);
       });
       return _result;
     } else {
@@ -159,7 +245,7 @@ class LoginBloc with Validators {
     }
   }
 
-  /// Used to send email verification
+  /// Used to send email verification to the current signed in Firebase account
   Future<String> _sendEmailVerification() async {
     await authenticationApi.sendEmailVerification();
     return 'Successful';

@@ -32,7 +32,7 @@ class FirebaseAuthenticationBloc implements AuthenticationBloc {
   void onAuthChanged() {
     authenticationApi.getFirebaseAuth().authStateChanges().listen((user) async {
       String uid = user != null
-          ? user.uid
+          ? user.jwt
           : null;
 
       if (user != null && (await authenticationApi.isEmailVerified())) {

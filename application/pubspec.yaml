@@ -28,20 +28,23 @@ dependencies:
   fl_chart: ^0.35.0
 
   # Needed for parsing dates
-  intl: ^0.16.1
+  intl: ^0.17.0
 
   # Needed for persistent storage
   path_provider: ^1.1.0
 
   # Needed for firebase auth
-  firebase_auth: ^0.20.1
-  firebase_core: ^0.7.0
+  firebase_auth: ^1.2.0
+  firebase_core: ^1.2.0
 
   # Secure storage for JWT token
   flutter_secure_storage: ^4.1.0
 
   # Needed for REST communication
-  http: ^0.12.2
+  http: ^0.13.3
+
+  # Used to select profile picture
+  image_picker: ^0.7.5
 
   # Provides bloc functionallity 
   flutter_bloc: ^5.0.0

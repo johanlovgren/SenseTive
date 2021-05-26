@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:sensetive/blocs/authentication_bloc.dart';
 import 'package:sensetive/services/external_authentication_api.dart';
 import 'package:sensetive/services/backend_api.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:sensetive/utils/jwt_decoder.dart';
 
 final String tokenKey = 'jwtToken';
 
@@ -32,7 +32,10 @@ class BackendAuthenticationBloc implements AuthenticationBloc {
   /// Initialises the BLoC, checking for existing JWT token and starting listeners
   void _init() async {
     String jwtToken = await secureStorage.read(key: tokenKey);
-    if (jwtToken != null && _jwtTokenValid(jwtToken))
+    DecodedJwt decodedJwt = jwtToken != null
+        ? DecodedJwt(jwt: jwtToken)
+        : null;
+    if (decodedJwt != null && decodedJwt.valid)
       addUser.add(jwtToken);
     else
       addUser.add(null);
@@ -59,25 +62,6 @@ class BackendAuthenticationBloc implements AuthenticationBloc {
   void dispose() {
     _authenticationController.close();
     _logoutController.close();
-  }
-
-  /// Check if JWT token is valid
-  ///
-  /// [jwtToken] full JWT token to be controlled for validity
-  bool _jwtTokenValid(String jwtToken) {
-    List<String> jwt = jwtToken.split('.');
-    if (jwt.length != 3) {
-      return false;
-    }
-    String encoded = jwt[1].replaceAll('-', '+').replaceAll('_', '/');
-    while (encoded.length %4 != 0)
-      encoded+= '=';
-    Map<String, dynamic> payload = json.decode(utf8.decode(base64Url.decode(encoded)));
-
-    if(DateTime.parse(payload['exp']).isBefore(DateTime.now())) {
-      return false;
-    }
-    return true;
   }
 }
 

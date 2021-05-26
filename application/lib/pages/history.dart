@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sensetive/blocs/history_bloc.dart';
+import 'package:sensetive/blocs/home_bloc_provider.dart';
 import 'package:sensetive/pages/result/result.dart';
 import 'package:sensetive/models/reading_models.dart';
 import 'package:sensetive/services/database.dart';
@@ -19,10 +20,16 @@ class _HistoryState extends State<History> {
   @override
   void initState() {
     super.initState();
-    _historyBloc = HistoryBloc();
-    sortBy = _historyBloc.sortAlternatives[0];
+
   }
 
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _historyBloc = HistoryBloc(jwt: HomeBlocProvider.of(context).jwt);
+    sortBy = _historyBloc.sortAlternatives[0];
+  }
 
   @override
   void dispose() {
