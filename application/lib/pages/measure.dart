@@ -17,7 +17,6 @@ class Measure extends StatefulWidget {
 class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
   ///Bloc for controlling the timer
   ///See [TimerBloc]
-  TimerBloc _timerBloc;
   MeasuringBloc _measuringBloc;
 
   //Controller for the animation
@@ -41,13 +40,11 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _measuringBloc = MeasuringBlocProvider.of(context).measuringBloc;
-    _timerBloc = _measuringBloc.timerBloc;
   }
 
   @override
   void dispose() {
     _animationController.dispose();
-    _timerBloc.close();
     super.dispose();
   }
 
@@ -68,8 +65,8 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height * 0.35,
                   alignment: Alignment.center,
-                  child: BlocProvider(
-                    create: (context) => _timerBloc,
+                  child: BlocProvider.value(
+                    value: _measuringBloc.timerBloc,
                     child: BlocBuilder<TimerBloc, TimerState>(
                       buildWhen: (previousState, state) =>
                       state.runtimeType != previousState.runtimeType,
@@ -89,8 +86,8 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
                 ),
               ],
             ),
-            BlocProvider(
-              create: (context) => _timerBloc,
+            BlocProvider.value(
+              value: _measuringBloc.timerBloc,
               child: Column(
                 children: [
                   BlocBuilder<TimerBloc, TimerState>(

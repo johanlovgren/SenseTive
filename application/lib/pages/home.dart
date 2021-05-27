@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:sensetive/blocs/measuring_bloc.dart';
 import 'package:sensetive/blocs/measuring_bloc_provider.dart';
 import 'package:sensetive/blocs/timer_bloc.dart';
@@ -10,9 +9,6 @@ import 'history.dart';
 import 'package:sensetive/blocs/home_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
 import 'package:sensetive/pages/measure.dart';
-
-
-
 
 
 class Home extends StatefulWidget {
@@ -50,7 +46,7 @@ class _HomeState extends State<Home> {
   @override
   void dispose() {
     _homeBloc.dispose();
-    // _measuringBloc.dispose();
+    _measuringBloc.dispose();
     super.dispose();
   }
 

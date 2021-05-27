@@ -90,6 +90,7 @@ class MeasuringBloc {
   }
 
   void dispose() {
+    timerBloc.close();
     _timerEventController.close();
   }
 }

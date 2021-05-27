@@ -37,8 +37,8 @@ class TimerActions extends StatelessWidget {
             backgroundColor: Colors.indigo.shade300,
             child: Icon(Icons.play_arrow),
             onPressed: () {
-              measuringBloc.addTimerEvent.add(TimerEvents.start);
               timerBloc.add(TimerStarted(duration: currentState.duration));
+              measuringBloc.addTimerEvent.add(TimerEvents.start);
             }
           ),
         ),
@@ -86,7 +86,10 @@ class TimerActions extends StatelessWidget {
       return [
         FloatingActionButton(
           child: Icon(Icons.stop),
-          onPressed: () => timerBloc.add(TimerReset()),
+          onPressed: () {
+            measuringBloc.addTimerEvent.add(TimerEvents.stop);
+            timerBloc.add(TimerReset());
+          }
         ),
       ];
     }
