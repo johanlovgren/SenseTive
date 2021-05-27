@@ -1,11 +1,10 @@
 
 import 'dart:async';
-import 'dart:io';
 
 import 'dart:math';
 
 class BluetoothService {
-  bool _measuring = false;
+  Timer _timer;
 
   StreamController<bool> _bluetoothConnectionController = StreamController<bool>();
   Sink<bool> get _addConnected => _bluetoothConnectionController.sink;
@@ -35,19 +34,21 @@ class BluetoothService {
   /// The measuring adds a datapoint to the data stream each second
   /// and will run until [stopMeasuring] is called.
   void startMeasuring() async {
-      _measuring = true;
-      while (_measuring) {
-        print('Measuring');
-        _addMotherHeartRate.add(60 +
-            (Random().nextBool() ? (-1) : 1) * Random().nextInt(3));
-        _addBabyHeartRate.add(140 +
-            (Random().nextBool() ? (-1) : 1) * Random().nextInt(3));
-        sleep(Duration(seconds: 1));
-      }
+    if (_timer != null && _timer.isActive)
+      return;
+
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      print('Measuring');
+      _addMotherHeartRate.add(60 +
+          (Random().nextBool() ? (-1) : 1) * Random().nextInt(3));
+      _addBabyHeartRate.add(140 +
+          (Random().nextBool() ? (-1) : 1) * Random().nextInt(3));
+    });
   }
 
   /// Stops a measuring session
   void stopMeasuring() {
-    _measuring = false;
+    if (_timer.isActive)
+      _timer.cancel();
   }
 }

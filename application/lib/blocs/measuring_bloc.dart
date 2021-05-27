@@ -1,24 +1,33 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/models/reading_models.dart';
 import 'package:sensetive/services/bluetooth.dart';
+import 'package:sensetive/services/database.dart';
 import 'package:sensetive/widgets/timer_actions.dart';
+import 'package:uuid/uuid.dart';
 
 class MeasuringBloc {
-  final timerBloc;
+  DatabaseFileRoutines _databaseFileRoutines;
+  ReadingsDatabase _readingsDatabase;
+  final String uid;
+
+  final TimerBloc timerBloc;
   final BluetoothService _bluetoothService = BluetoothService();
   final List<int> _motherHeartRates = [];
   final List<int> _babyHeartRates = [];
-  final DateTime _date = DateTime.now();
-
 
   final StreamController<int> _timerEventController = StreamController<int>();
   Sink<int> get addTimerEvent => _timerEventController.sink;
   Stream<int> get timerEvent => _timerEventController.stream;
 
-  MeasuringBloc({@required this.timerBloc}) {
+  MeasuringBloc({@required this.timerBloc, @required this.uid}) {
+    _init();
+  }
 
+  void _init() async {
+    _databaseFileRoutines = DatabaseFileRoutines(uid: uid);
     _bluetoothService.motherHeartRate.listen((heartRate) {
       _addHeartRate(heartRate, _motherHeartRates);
       print(_motherHeartRates);
@@ -31,20 +40,17 @@ class MeasuringBloc {
       switch (event){
         case TimerEvents.start:
           _bluetoothService.startMeasuring();
-          // TODO Implement this
           break;
         case TimerEvents.pause:
-        // TODO Implement this
-        _bluetoothService.stopMeasuring();
+          _bluetoothService.stopMeasuring();
           break;
         case TimerEvents.stop:
-        // TODO Implement this
-        _bluetoothService.stopMeasuring();
-        break;
+          _bluetoothService.stopMeasuring();
+          completeReading(timerBloc.getCurrentDuration());
+          break;
       }
     });
   }
-
   void _addHeartRate(int heartRate, List<int> heartRates) {
     heartRates.add(heartRate);
   }
@@ -57,21 +63,30 @@ class MeasuringBloc {
     return _babyHeartRates;
   }
 
-  Reading completeReading(int duration) {
+  Future<void> _storeReading(Reading reading) async {
+    if (_readingsDatabase == null) {
+      _readingsDatabase = readingsDatabaseFromJson(await _databaseFileRoutines.readReadings());
+    }
+    _readingsDatabase.readings.add(reading);
+    await _databaseFileRoutines.writeReadings(databaseToJson(_readingsDatabase));
+
+    // TODO store reading in remote database
+  }
+
+  void completeReading(int duration) async {
     Reading newReading = Reading(
-        id: 1,
+        id: Uuid().v4(),
         date: DateTime.now().subtract(Duration(seconds: duration)),
         durationSeconds: duration,
-        momHeartRate: getMotherHeartRates(),
-        babyHeartRate: getBabyHeartRates(),
+        momHeartRate: _motherHeartRates,
+        babyHeartRate: _babyHeartRates,
         oxygenLevel: null,
         contractions: null);
-    // TODO Store reading in database
 
+    await _storeReading(newReading);
 
     _motherHeartRates.clear();
     _babyHeartRates.clear();
-    return newReading;
   }
 
   void dispose() {

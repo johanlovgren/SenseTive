@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sensetive/blocs/measuring_bloc.dart';
+import 'package:sensetive/blocs/measuring_bloc_provider.dart';
 import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/blocs/timer_state.dart';
-import 'package:sensetive/classes/ticker.dart';
 import 'package:sensetive/widgets/halfcircle_background.dart';
-import 'package:sensetive/widgets/pulsedisplay.dart';
 import 'package:sensetive/widgets/timer_widget.dart';
 import 'package:sensetive/widgets/timer_actions.dart';
 import 'package:sensetive/widgets/measuring_content_widget.dart';

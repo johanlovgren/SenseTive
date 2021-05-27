@@ -42,6 +42,8 @@ class BackendAuthenticationBloc implements AuthenticationBloc {
 
     externalAuthenticationApi.loginUser.listen((event) {
       backendApi.signIn(method: event.method, token: event.token).then((jwtToken) {
+        if (!DecodedJwt(jwt: jwtToken).valid)
+          throw(Exception('Server cannot authenticate: token not valid'));
         secureStorage.write(key: tokenKey, value: jwtToken);
         addUser.add(jwtToken);
       })

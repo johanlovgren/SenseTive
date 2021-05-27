@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sensetive/blocs/measuring_bloc.dart';
-import 'package:sensetive/blocs/timer_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/blocs/timer_state.dart';
-import 'package:sensetive/pages/measure.dart';
 import 'package:sensetive/widgets/pulsedisplay.dart';
 
 class MeasuringContentWidget extends StatelessWidget {
@@ -22,7 +20,7 @@ class MeasuringContentWidget extends StatelessWidget {
     final TimerState currentState = timerBloc.state;
     if (currentState is TimerInitial || currentState is TimerRunComplete) {
       return Text(
-        'Welcome Sarah! \n Let\'s start recording \n your measurements',
+        'Welcome! \n Let\'s start recording',
         textAlign: TextAlign.center,
         style: TextStyle(
           color: Colors.indigo,

@@ -68,7 +68,10 @@ class TimerActions extends StatelessWidget {
       return [
         FloatingActionButton(
           child: Icon(Icons.play_arrow),
-          onPressed: () => timerBloc.add(TimerResumed()),
+          onPressed: () {
+            timerBloc.add(TimerResumed());
+            measuringBloc.addTimerEvent.add(TimerEvents.start);
+          },
         ),
         FloatingActionButton(
           child: Icon(Icons.stop),

@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 
 /// Model containing a reading
 class Reading {
-  final int id;
+  final String id;
   final DateTime date;
   final int durationSeconds;
   final List<int> momHeartRate;
@@ -19,10 +19,10 @@ class Reading {
     this.babyHeartRate,
     this.oxygenLevel,
     this.contractions}) {
-    momAvgHeartRate = momHeartRate != null
+    momAvgHeartRate = momHeartRate != null && momHeartRate.length != 0
         ? (momHeartRate.reduce((a, b) => a+b) / momHeartRate.length).round()
         : null;
-    babyAvgHeartRate = babyHeartRate != null
+    babyAvgHeartRate = babyHeartRate != null && babyHeartRate.length != 0
         ? (babyHeartRate.reduce((a, b) => a+b) / babyHeartRate.length).round()
         : null;
   }

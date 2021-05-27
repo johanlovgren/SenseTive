@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:sensetive/blocs/authentication_bloc.dart';
-import 'package:sensetive/blocs/authentication_bloc_provider.dart';
 import 'package:sensetive/blocs/measuring_bloc.dart';
 import 'package:sensetive/blocs/measuring_bloc_provider.dart';
 import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/classes/ticker.dart';
 import 'package:sensetive/pages/profile.dart';
+import 'package:sensetive/utils/jwt_decoder.dart';
 import 'history.dart';
 import 'package:sensetive/blocs/home_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
@@ -23,7 +22,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   HomeBloc _homeBloc;
-  MeasuringBloc _measuringBloc = MeasuringBloc(timerBloc: TimerBloc(ticker: Ticker()));
+  MeasuringBloc _measuringBloc;
 
   static final List<String> _headings = ['Home', 'History', 'Profile'];
   Widget _currentPage;
@@ -35,6 +34,28 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _homeBloc = HomeBlocProvider.of(context).homeBloc;
+    _measuringBloc = MeasuringBloc(
+        timerBloc: TimerBloc(ticker: Ticker()),
+        uid:  DecodedJwt(jwt: HomeBlocProvider.of(context).jwt).uid
+    );
+  }
+
+
+  @override
+  void dispose() {
+    _homeBloc.dispose();
+    // _measuringBloc.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     _listPages
       ..add(MeasuringBlocProvider(
         measuringBloc: _measuringBloc,
@@ -44,24 +65,7 @@ class _HomeState extends State<Home> {
       ..add(Profile());
     _currentPage = _listPages[_currentIndex];
     _currentHeading = _headings[_currentIndex];
-  }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _homeBloc = HomeBlocProvider.of(context).homeBloc;
-  }
-
-
-  @override
-  void dispose() {
-    _homeBloc.dispose();
-    _measuringBloc.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(_currentHeading),
