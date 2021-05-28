@@ -7,16 +7,17 @@ import 'package:sensetive/services/backend.dart';
 import 'package:sensetive/services/backend_api.dart';
 import 'package:sensetive/services/bluetooth.dart';
 import 'package:sensetive/services/database.dart';
+import 'package:sensetive/utils/jwt_decoder.dart';
 import 'package:sensetive/widgets/timer_actions.dart';
 import 'package:uuid/uuid.dart';
 
 class MeasuringBloc {
   DatabaseFileRoutines _databaseFileRoutines;
   ReadingsDatabase _readingsDatabase;
-  BackendApi _backendApi;
-  final String uid;
+  final String jwt;
 
   final TimerBloc timerBloc;
+  final BackendApi _backendApi = BackendService();
   final BluetoothService _bluetoothService = BluetoothService();
   final List<int> _motherHeartRates = [];
   final List<int> _babyHeartRates = [];
@@ -25,13 +26,12 @@ class MeasuringBloc {
   Sink<int> get addTimerEvent => _timerEventController.sink;
   Stream<int> get timerEvent => _timerEventController.stream;
 
-  MeasuringBloc({@required this.timerBloc, @required this.uid}) {
+  MeasuringBloc({@required this.timerBloc, @required this.jwt}) {
     _init();
   }
 
   void _init() async {
-    _backendApi = BackendService();
-    _databaseFileRoutines = DatabaseFileRoutines(uid: uid);
+    _databaseFileRoutines = DatabaseFileRoutines(uid: DecodedJwt(jwt: jwt).uid);
     _bluetoothService.motherHeartRate.listen((heartRate) {
       _addHeartRate(heartRate, _motherHeartRates);
       print(_motherHeartRates);
@@ -74,7 +74,7 @@ class MeasuringBloc {
     await _databaseFileRoutines.writeReadings(databaseToJson(_readingsDatabase));
 
     // Store reading remote
-    _backendApi.uploadReading(jwtToken: null, reading: reading)
+    _backendApi.uploadReading(jwtToken: jwt, reading: reading)
         .catchError((error) {
       // TODO handle error
       print(error.message);
