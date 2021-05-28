@@ -71,10 +71,24 @@ class HearRateLineChartWidget extends StatelessWidget {
           ),
           margin: 10,
           getTitles: (value) {
-            if (value.toInt() % 10 == 0)
-              return value.toString();
-            else
-              return '';
+            if (_values.length < 10) {
+              return value.toInt() % 2 == 0
+                  ? value.toString()
+                  : '';
+            }
+            else if (_values.length < 5 * 60) {
+              return value.toInt() % 10 == 0
+                  ? value.toString()
+                  : '';
+            } else if (_values.length < 10 * 60) {
+              return value.toInt() % (5 * 60) == 0
+                  ? value.toString()
+                  : '';
+            } else {
+              return value.toInt() % (10 * 60) == 0
+                  ? value.toString()
+                  : '';
+            }
           }
         ),
         leftTitles: SideTitles(
@@ -107,7 +121,9 @@ class HearRateLineChartWidget extends StatelessWidget {
         ),
         bottomTitle: AxisTitle(
           showTitle: true,
-          titleText: 'Minutes',
+          titleText: _values.length < 5 * 60
+          ? 'Seconds'
+          : 'Minutes',
           margin: 0,
           textStyle: TextStyle(
               color: Colors.indigo,
