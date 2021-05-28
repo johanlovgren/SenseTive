@@ -100,5 +100,6 @@ class MeasuringBloc {
   void dispose() {
     timerBloc.close();
     _timerEventController.close();
+    _bluetoothService.dispose();
   }
 }
