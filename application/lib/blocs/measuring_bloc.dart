@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/models/reading_models.dart';
+import 'package:sensetive/services/backend.dart';
+import 'package:sensetive/services/backend_api.dart';
 import 'package:sensetive/services/bluetooth.dart';
 import 'package:sensetive/services/database.dart';
 import 'package:sensetive/widgets/timer_actions.dart';
@@ -11,6 +13,7 @@ import 'package:uuid/uuid.dart';
 class MeasuringBloc {
   DatabaseFileRoutines _databaseFileRoutines;
   ReadingsDatabase _readingsDatabase;
+  BackendApi _backendApi;
   final String uid;
 
   final TimerBloc timerBloc;
@@ -27,6 +30,7 @@ class MeasuringBloc {
   }
 
   void _init() async {
+    _backendApi = BackendService();
     _databaseFileRoutines = DatabaseFileRoutines(uid: uid);
     _bluetoothService.motherHeartRate.listen((heartRate) {
       _addHeartRate(heartRate, _motherHeartRates);
@@ -64,13 +68,19 @@ class MeasuringBloc {
   }
 
   Future<void> _storeReading(Reading reading) async {
+    // Store reading locally
     if (_readingsDatabase == null) {
       _readingsDatabase = readingsDatabaseFromJson(await _databaseFileRoutines.readReadings());
     }
     _readingsDatabase.readings.add(reading);
     await _databaseFileRoutines.writeReadings(databaseToJson(_readingsDatabase));
 
-    // TODO store reading in remote database
+    // Store reading remote
+    _backendApi.uploadReading(jwtToken: null, reading: reading)
+        .catchError((error) {
+      // TODO handle error
+      print(error.message);
+    });
   }
 
   void completeReading(int duration) async {

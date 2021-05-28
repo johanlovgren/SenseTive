@@ -30,7 +30,7 @@ class DatabaseFileRoutines {
   /// Writes a profile picture for the current user
   ///
   /// [picture] The picture to copy
-  void writeProfileImage(File picture) async {
+  Future <void> writeProfileImage(File picture) async {
     final path = await _localPath;
     await picture.copy('$path/$uid.png');
   }
