@@ -69,9 +69,7 @@ class MeasuringBloc {
 
   Future<void> _storeReading(Reading reading) async {
     // Store reading locally
-    if (_readingsDatabase == null) {
-      _readingsDatabase = readingsDatabaseFromJson(await _databaseFileRoutines.readReadings());
-    }
+    _readingsDatabase = readingsDatabaseFromJson(await _databaseFileRoutines.readReadings());
     _readingsDatabase.readings.add(reading);
     await _databaseFileRoutines.writeReadings(databaseToJson(_readingsDatabase));
 
