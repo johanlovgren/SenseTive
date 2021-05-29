@@ -9,6 +9,7 @@ import 'package:sensetive/widgets/timer_widget.dart';
 import 'package:sensetive/widgets/timer_actions.dart';
 import 'package:sensetive/widgets/measuring_content_widget.dart';
 
+/// The measure screen
 class Measure extends StatefulWidget {
   @override
   _MeasureState createState() => _MeasureState();
@@ -16,7 +17,6 @@ class Measure extends StatefulWidget {
 
 class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
   ///Bloc for controlling the timer
-  ///See [TimerBloc]
   MeasuringBloc _measuringBloc;
 
   //Controller for the animation
@@ -34,7 +34,6 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
     _animationController.repeat(reverse: true);
     super.initState();
   }
-
 
   @override
   void didChangeDependencies() {
@@ -69,17 +68,17 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
                     value: _measuringBloc.timerBloc,
                     child: BlocBuilder<TimerBloc, TimerState>(
                       buildWhen: (previousState, state) =>
-                      state.runtimeType != previousState.runtimeType,
+                          state.runtimeType != previousState.runtimeType,
                       builder: (context, state) => state is TimerInitial
                           ? Text(
-                        'Connected to \n SenseTive Sensor',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 35.0,
-                          color: Colors.white,
-                        ),
-                      )
+                              'Connected to \n SenseTive Sensor',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 35.0,
+                                color: Colors.white,
+                              ),
+                            )
                           : TimerWidget(),
                     ),
                   ),
@@ -92,13 +91,13 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
                 children: [
                   BlocBuilder<TimerBloc, TimerState>(
                       buildWhen: (previousState, state) =>
-                      state.runtimeType != previousState.runtimeType,
+                          state.runtimeType != previousState.runtimeType,
                       builder: (context, state) => TimerActions()),
                   Padding(
                     padding: const EdgeInsets.only(top: 50.0),
                     child: BlocBuilder<TimerBloc, TimerState>(
                         buildWhen: (previousState, state) =>
-                        state.runtimeType != previousState.runtimeType,
+                            state.runtimeType != previousState.runtimeType,
                         builder: (context, state) =>
                             MeasuringContentWidget(_animation, _measuringBloc)),
                   ),

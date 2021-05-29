@@ -5,6 +5,8 @@ import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/blocs/timer_state.dart';
 import 'package:sensetive/widgets/pulsedisplay.dart';
 
+/// [animation] the animations that is displayed when measuring
+/// [measuringBloc] the BLoC that controlls the measuring
 class MeasuringContentWidget extends StatelessWidget {
   final Animation animation;
   final MeasuringBloc measuringBloc;
@@ -56,10 +58,9 @@ class MeasuringContentWidget extends StatelessWidget {
               child:
                   // TODO Fix animation
                   PulseDisplayWidget(
-                      measuringBloc.getMotherHeartRates().length == 0 ?
-                      null
-                      : measuringBloc.getMotherHeartRates().last
-                  ));
+                      measuringBloc.getMotherHeartRates().length == 0
+                          ? null
+                          : measuringBloc.getMotherHeartRates().last));
         },
       );
     }
