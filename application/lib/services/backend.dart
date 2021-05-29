@@ -55,12 +55,30 @@ class BackendService implements BackendApi {
   Future<void> uploadReading({String jwtToken, Reading reading}) async {
     final response = await post(
       Uri.parse(_restApi + _restReading),
-      headers: _header,
+      headers: _header..addEntries([MapEntry('Authorization', jwtToken)]),
       body: jsonEncode({
-        'Reading': reading
+        'readingId': reading.id,
+        'duration': reading.durationSeconds,
+        'time': reading.date.millisecondsSinceEpoch * 1000,
+        'parentHeartRateSamples': _convertHeartRate(reading.date, reading.momHeartRate),
+        'childHeartRateSamples': _convertHeartRate(reading.date, reading.babyHeartRate),
+        'contractions': null
       })
     );
     if (response.statusCode != 200)
       throw(Exception('Could not upload reading to server: ${response.statusCode}'));
+
+  }
+
+  List<Map<String, int>> _convertHeartRate(DateTime date, List<int> heartRate) {
+    int index = 0;
+    int secondsSinceEpoc = date.millisecondsSinceEpoch * 1000;
+    return List.from(heartRate.map((x)
+      => {
+        'time': secondsSinceEpoc + index++,
+        'heartRate': x
+      }
+    ));
   }
 }
+

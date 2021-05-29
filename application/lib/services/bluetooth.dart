@@ -24,6 +24,8 @@ class BluetoothService {
 
   /// Dispose the bluetooth service, closing all streams
   void dispose() {
+    if (_timer != null && _timer.isActive)
+      _timer.cancel();
     _bluetoothConnectionController.close();
     _motherHeartRateController.close();
     _babyHeartRateController.close();

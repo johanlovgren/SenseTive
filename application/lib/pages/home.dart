@@ -4,7 +4,6 @@ import 'package:sensetive/blocs/measuring_bloc_provider.dart';
 import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/classes/ticker.dart';
 import 'package:sensetive/pages/profile.dart';
-import 'package:sensetive/utils/jwt_decoder.dart';
 import 'history.dart';
 import 'package:sensetive/blocs/home_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
@@ -38,7 +37,7 @@ class _HomeState extends State<Home> {
     _homeBloc = HomeBlocProvider.of(context).homeBloc;
     _measuringBloc = MeasuringBloc(
         timerBloc: TimerBloc(ticker: Ticker()),
-        uid:  DecodedJwt(jwt: HomeBlocProvider.of(context).jwt).uid
+        jwt:  HomeBlocProvider.of(context).jwt
     );
   }
 
