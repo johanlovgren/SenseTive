@@ -59,7 +59,7 @@ class BackendService implements BackendApi {
       body: jsonEncode({
         'readingId': reading.id,
         'duration': reading.durationSeconds,
-        'time': reading.date.millisecondsSinceEpoch * 1000,
+        'time': reading.date.millisecondsSinceEpoch ~/ 1000,
         'parentHeartRateSamples': _convertHeartRate(reading.date, reading.momHeartRate),
         'childHeartRateSamples': _convertHeartRate(reading.date, reading.babyHeartRate),
         'contractions': null
@@ -72,7 +72,7 @@ class BackendService implements BackendApi {
 
   List<Map<String, int>> _convertHeartRate(DateTime date, List<int> heartRate) {
     int index = 0;
-    int secondsSinceEpoc = date.millisecondsSinceEpoch * 1000;
+    int secondsSinceEpoc = date.millisecondsSinceEpoch ~/ 1000;
     return List.from(heartRate.map((x)
       => {
         'time': secondsSinceEpoc + index++,
