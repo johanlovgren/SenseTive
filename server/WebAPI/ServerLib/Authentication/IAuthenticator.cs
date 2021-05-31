@@ -21,6 +21,12 @@ namespace ServerLib.Authentication
         Task<AuthenticationResult> Authenticate(string identifier, string password);
 
         /// <summary>
+        /// Deauthenticates a user with the specified identifier
+        /// </summary>
+        /// <param name="identifier">The identifier to use to authenticate the user</param>
+        Task Deauthenticate(string identifier);
+
+        /// <summary>
         /// Initializes the authenticator so that is it usable.
         /// </summary>
         /// <returns></returns>

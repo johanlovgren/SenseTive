@@ -35,8 +35,18 @@ namespace ServerLib.Authentication
         public async Task<AuthenticationResult> Authenticate(string identifier, string password)
         {
             return _authenticationResult 
-                ? AuthenticationResult.Successful(identifier)
+                ? AuthenticationResult.Successful(identifier, identifier)
                 : AuthenticationResult.Unsuccessful();
+        }
+
+        /// <summary>
+        /// Deauthenticates a user with the given identifier and password.
+        /// This method does, at the moment, nothing.
+        /// </summary>
+        /// <param name="identifier">The identifier to deauthenticate</param>
+        public async Task Deauthenticate(string identifier)
+        {
+            
         }
 
         /// <summary>

@@ -26,7 +26,7 @@ namespace ServerLib
         /// <param name="method">The authentication method used by the user</param>
         /// <param name="identifier">The authentication identifier used by the user</param>
         /// <returns>The user associated with the authentication details</returns>
-        public async Task<DbUser> GetOrCreateUser(AuthenticationMethod method, string identifier)
+        public async Task<DbUser> GetOrCreateUser(AuthenticationMethod method, string identifier, string email)
         {
             await using var userTable = await _database.Table<DbUser>()
                 .ConfigureAwait(false);
@@ -35,9 +35,6 @@ namespace ServerLib
 
             var userTableName = userTable.TableName;
             var loginTableName = loginTable.TableName;
-
-            var q = userTable.Query()
-                ;
 
             var existingUser = await userTable.SelectFirstOrDefault(query => query
                 .WhereExists(loginTable.Query()
@@ -49,8 +46,9 @@ namespace ServerLib
             if (existingUser != null)
                 return existingUser;
 
-            var user = await CreateUser(userTable)
-                .ConfigureAwait(false);
+            var user = await CreateUser(userTable, user => {
+                user.Email = email;
+            }).ConfigureAwait(false);
 
             if (user == null)
                 throw new Exception("Could not create user in database.");
@@ -81,7 +79,7 @@ namespace ServerLib
             var user = new DbUser()
             {
                 UserId = userId.ToString(),
-                Authorization = AuthorizationLevel.User.ToString()
+                Authorization = AuthorizationLevel.User.ToString(),
             };
 
             configurator?.Invoke(user);
