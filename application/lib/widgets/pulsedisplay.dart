@@ -18,11 +18,9 @@ class PulseDisplayWidget extends StatelessWidget {
             shape: BoxShape.circle,
           ),
         ),
-        Icon(Icons.favorite, size: 150, color: Colors.red),
+        Icon(Icons.favorite, size: 100, color: Colors.red),
         Text(
-          _heartRate == null
-              ? ''
-              : '$_heartRate\nBPM',
+          _heartRate == null ? '' : '$_heartRate\nBPM',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.black,

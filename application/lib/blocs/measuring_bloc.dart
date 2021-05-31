@@ -29,6 +29,8 @@ class MeasuringBloc {
   final BluetoothService _bluetoothService = BluetoothService();
   final List<int> _motherHeartRates = [];
   final List<int> _babyHeartRates = [];
+  //AnimationController animationController;
+  //Animation animation;
 
   /// Stream for checking actions performed to the timer
   final StreamController<int> _timerEventController = StreamController<int>();
@@ -42,6 +44,7 @@ class MeasuringBloc {
   /// Initializing the different services and controllers used for collecting
   /// a measurement
   void _init() async {
+    //animationController = AnimationController(vsync: 0,duration: Duration(seconds: 2));
     _databaseFileRoutines = DatabaseFileRoutines(uid: DecodedJwt(jwt: jwt).uid);
     _bluetoothService.motherHeartRate.listen((heartRate) {
       _addHeartRate(heartRate, _motherHeartRates);
