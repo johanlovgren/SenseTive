@@ -28,7 +28,7 @@ namespace ServerLib.Authentication
         /// </summary>
         [JsonProperty("iat")]
         public long IssueTimeUnix {
-            get => new DateTimeOffset(IssueTime).ToUnixTimeSeconds();
+            get => new DateTimeOffset(DateTime.SpecifyKind(IssueTime, DateTimeKind.Utc)).ToUnixTimeSeconds();
             set => IssueTime = DateTimeOffset.FromUnixTimeSeconds(value).UtcDateTime;
         }
 
@@ -43,7 +43,7 @@ namespace ServerLib.Authentication
         public long? ExpiryTimeEpoch 
         {
             get => ExpiryTime.HasValue
-                ? new DateTimeOffset(ExpiryTime.Value).ToUnixTimeSeconds()
+                ? new DateTimeOffset(DateTime.SpecifyKind(ExpiryTime.Value, DateTimeKind.Utc)).ToUnixTimeSeconds()
                 : null;
             set => ExpiryTime = value.HasValue
                 ? DateTimeOffset.FromUnixTimeSeconds(value.Value).UtcDateTime
