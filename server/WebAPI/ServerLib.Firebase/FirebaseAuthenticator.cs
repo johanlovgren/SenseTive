@@ -60,9 +60,8 @@ namespace ServerLib.Firebase
                     .ConfigureAwait(false)
             };
 
-            FirebaseApp.DefaultInstance?.Delete();
-
-            _firebaseApp = FirebaseApp.Create(options);
+            const string appName = "sensetive";
+            _firebaseApp = FirebaseApp.GetInstance(appName) ?? FirebaseApp.Create(options, appName);
             _firebaseAuth = FirebaseAuth.GetAuth(_firebaseApp);
         }
 
@@ -80,12 +79,27 @@ namespace ServerLib.Firebase
                 var token = await _firebaseAuth.VerifyIdTokenAsync(identifier)
                     .ConfigureAwait(false);
 
-                return AuthenticationResult.Successful(token.Uid);
+                var user = await _firebaseAuth.GetUserAsync(token.Uid);
+
+                if (user == null || !user.EmailVerified || user.Email == null)
+                    throw new Exception("The associated user is invalid or non existant.");
+
+                return AuthenticationResult.Successful(token.Uid, user.Email);
             } catch (FirebaseAuthException ex)
             {
                 _logger.LogError(ex, "An exception has occurred while identifying user with firebase.");
                 return AuthenticationResult.Unsuccessful();
             }
+        }
+        
+        /// <summary>
+        /// Deauthenticates credentials using Firebase
+        /// </summary>
+        /// <param name="identifier">The identifier to deauthenticate</param>
+        public async Task Deauthenticate(string identifier)
+        {
+            await _firebaseAuth.DeleteUserAsync(identifier)
+                .ConfigureAwait(false);
         }
     }
 }
