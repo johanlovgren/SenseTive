@@ -11,7 +11,7 @@ namespace ServerLib.Authentication
     /// An instance of this class contains information on whether the
     /// authentication was successful, and the authenticated identifier, if any.
     /// </summary>
-    public record AuthenticationResult(bool IsSuccessful, string AuthenticatedIdentifier = null)
+    public record AuthenticationResult(bool IsSuccessful, string AuthenticatedIdentifier, string Email)
     {
         /// <summary>
         /// Creates a successful authentication result with the 
@@ -19,8 +19,8 @@ namespace ServerLib.Authentication
         /// </summary>
         /// <param name="authenticatedIdentifier"></param>
         /// <returns></returns>
-        public static AuthenticationResult Successful(string authenticatedIdentifier) =>
-            new(true, authenticatedIdentifier);
+        public static AuthenticationResult Successful(string authenticatedIdentifier, string email) =>
+            new(true, authenticatedIdentifier, email);
 
         /// <summary>
         /// Creates an unsuccessful authentication result with no
@@ -28,6 +28,6 @@ namespace ServerLib.Authentication
         /// </summary>
         /// <returns></returns>
         public static AuthenticationResult Unsuccessful() =>
-            new(false);
+            new(false, null, null);
     }
 }

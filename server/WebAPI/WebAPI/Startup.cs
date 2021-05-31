@@ -46,6 +46,7 @@ namespace WebAPI
                 .AddSingleton(Configuration)
                 .AddServerLib()
                 .AddLoginAuthenticators()
+                .AddSingleton<UserService>()
                 .AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtAuthenticationDefaults.AuthenticationScheme;
@@ -76,6 +77,7 @@ namespace WebAPI
 
             app.UseAuthorization();
             app.UseAuthentication();
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseSerilogRequestLogging();
 

@@ -39,5 +39,19 @@ namespace ServerLib.Authentication
             return await authenticator.Authenticate(identifier, password)
                 .ConfigureAwait(false);
         }
+
+        public async Task Deauthenticate(AuthenticationMethod authMethod, string identifier)
+        {
+            var authenticator = _authenticatorProvider(authMethod);
+
+            if (authenticator == null)
+                throw new NotImplementedException("The specified authentication method is not implemented.");
+
+            await authenticator.Initialize()
+                .ConfigureAwait(false);
+
+            await authenticator.Deauthenticate(identifier)
+                .ConfigureAwait(false);
+        }
     }
 }

@@ -16,10 +16,23 @@ namespace ServerLib.Authentication
         [JsonProperty("sub")]
         public string UserId { get; set; }
 
+        [JsonIgnore]
+        public Guid UserGuid
+        {
+            get => Guid.Parse(UserId);
+            set => UserId = value.ToString();
+        }
+
         /// <summary>
         /// The date and time of when the token was issued
         /// </summary>
         [JsonProperty("iat")]
+        public long IssueTimeUnix {
+            get => new DateTimeOffset(DateTime.SpecifyKind(IssueTime, DateTimeKind.Utc)).ToUnixTimeSeconds();
+            set => IssueTime = DateTimeOffset.FromUnixTimeSeconds(value).UtcDateTime;
+        }
+
+        [JsonIgnore]
         public DateTime IssueTime { get; set; }
 
         /// <summary>
@@ -27,6 +40,17 @@ namespace ServerLib.Authentication
         /// If null, the token has no set expiry date.
         /// </summary>
         [JsonProperty("exp")]
+        public long? ExpiryTimeEpoch 
+        {
+            get => ExpiryTime.HasValue
+                ? new DateTimeOffset(DateTime.SpecifyKind(ExpiryTime.Value, DateTimeKind.Utc)).ToUnixTimeSeconds()
+                : null;
+            set => ExpiryTime = value.HasValue
+                ? DateTimeOffset.FromUnixTimeSeconds(value.Value).UtcDateTime
+                : null;
+        }
+
+        [JsonIgnore]
         public DateTime? ExpiryTime { get; set; }
 
         /// <summary>
@@ -65,7 +89,7 @@ namespace ServerLib.Authentication
         /// Note that the time comparison is done in UTC time.
         /// </summary>
         /// <returns>True if the issue time of the token is in the past, false otherwise.</returns>
-        public bool HasBeenIssued() => IssueTime > DateTime.UtcNow;
+        public bool HasBeenIssued() => IssueTime < DateTime.UtcNow;
 
         /// <summary>
         /// Checks whether or not a token has expired

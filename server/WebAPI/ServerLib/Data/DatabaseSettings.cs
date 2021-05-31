@@ -37,10 +37,10 @@ namespace ServerLib.Data
         /// </summary>
         /// <returns>A compiled database connection string.</returns>
         public string GetConnectionString() =>
-            $"Server={Hostname}; " +
-            $"Port={Port}; " +
-            $"User ID={Username}; " +
-            $"Password={Password}; " +
-            $"Database={Database}; ";
+            $"Server={Hostname};" +
+            $"Port={Port};" +
+            $"Uid={Username};" +
+            $"Pwd={Password};" +
+            $"Database={Database};";
     }
 }

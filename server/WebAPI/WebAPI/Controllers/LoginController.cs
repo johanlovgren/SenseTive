@@ -71,7 +71,7 @@ namespace WebAPI.Controllers
                 return null;
             }
 
-            var user = await _accountManager.GetOrCreateUser(request.Method, request.Identifier)
+            var user = await _accountManager.GetOrCreateUser(request.Method, authResult.AuthenticatedIdentifier, authResult.Email)
                 .ConfigureAwait(false);
 
             if (user == null || !Guid.TryParse(user.UserId, out var userId))
