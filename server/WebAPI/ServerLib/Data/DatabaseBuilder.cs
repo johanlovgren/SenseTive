@@ -27,7 +27,9 @@ namespace ServerLib.Data
             if (TableMap == null || TableMap.Count == 0)
                 WithTable(
                     new DbUserLogin(),
-                    new DbUser()
+                    new DbUser(),
+                    new DbReading(),
+                    new DbNumericReadingEntry()
                 );
 
             return await base.Build().ConfigureAwait(false);
