@@ -24,6 +24,25 @@ namespace ServerLib.Data
         [DatabaseColumn("VARCHAR(16)", NotNull = true, Default = "\'User\'")]
         public string Authorization { get; set; }
 
+        /// <summary>
+        /// THe users email address
+        /// </summary>
+        [Index(Unique = true)]
+        [DatabaseColumn("TINYTEXT", NotNull = true)]
+        public string Email { get; set; }
+
+        /// <summary>
+        /// The first name of the user
+        /// </summary>
+        [DatabaseColumn("TINYTEXT")]
+        public string FirstName { get; set; }
+
+        /// <summary>
+        /// The last name of the user, or null if the user has no last name
+        /// </summary>
+        [DatabaseColumn("TINYTEXT")]
+        public string LastName { get; set; }
+
         public DbUser()
         {
 
