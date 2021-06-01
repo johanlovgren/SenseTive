@@ -50,8 +50,9 @@ class HistoryBloc {
   /// Starts the stream listeners
   void _startListeners() {
     removeReading.listen((index) {
-      _readingDatabase.readings.removeAt(index);
-      _currentShowingReadings = _readingDatabase.readings;
+      _currentShowingReadings.removeAt(index);
+      _readingDatabase.readings.removeWhere((reading)
+        => reading.id == _currentShowingReadings[index].id);
       _addReadingList.add(_currentShowingReadings);
       _databaseFileRoutines.writeReadings(databaseToJson(_readingDatabase));
     });
