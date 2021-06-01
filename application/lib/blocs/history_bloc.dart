@@ -17,6 +17,7 @@ class HistoryBloc {
   final String jwt;
   DatabaseFileRoutines _databaseFileRoutines;
   ReadingsDatabase _readingDatabase;
+  List<Reading> _currentShowingReadings;
 
   /// Stream used for the list of readings
   final StreamController<List<Reading>> _readingListController = StreamController<List<Reading>>();
@@ -40,7 +41,8 @@ class HistoryBloc {
     _databaseFileRoutines.readReadings().then((readingsJson) {
       _readingDatabase = readingsDatabaseFromJson(readingsJson);
       _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
-      _addReadingList.add(_readingDatabase.readings);
+      _currentShowingReadings = _readingDatabase.readings;
+      _addReadingList.add(_currentShowingReadings);
     });
     _startListeners();
   }
@@ -49,11 +51,13 @@ class HistoryBloc {
   void _startListeners() {
     removeReading.listen((index) {
       _readingDatabase.readings.removeAt(index);
-      _addReadingList.add(_readingDatabase.readings);
+      _currentShowingReadings = _readingDatabase.readings;
+      _addReadingList.add(_currentShowingReadings);
       _databaseFileRoutines.writeReadings(databaseToJson(_readingDatabase));
     });
     filter.listen((filterBy) {
-      _addReadingList.add(_filterReadings(filterBy, _readingDatabase.readings));
+      _currentShowingReadings = _filterReadings(filterBy, _readingDatabase.readings);
+      _addReadingList.add(_currentShowingReadings);
     });
     sort.listen((index) {
       _addReadingList.add(_sortReadings(index));
@@ -65,14 +69,14 @@ class HistoryBloc {
   /// [sortBy] what to sort the readings by, see [sortAlternatives]
   List<Reading> _sortReadings(String sortBy) {
     if (sortBy == sortAlternatives[0])
-      _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
+      _currentShowingReadings.sort((a, b) => b.date.compareTo(a.date));
     else if (sortBy == sortAlternatives[1])
-      _readingDatabase.readings.sort((a, b) => a.date.compareTo(b.date));
+      _currentShowingReadings.sort((a, b) => a.date.compareTo(b.date));
     else if (sortBy == sortAlternatives[2])
-      _readingDatabase.readings.sort((a, b) => b.durationSeconds.compareTo(a.durationSeconds));
+      _currentShowingReadings.sort((a, b) => b.durationSeconds.compareTo(a.durationSeconds));
     else if (sortBy == sortAlternatives[3])
-      _readingDatabase.readings.sort((a, b) => a.durationSeconds.compareTo(b.durationSeconds));
-    return _readingDatabase.readings;
+      _currentShowingReadings.sort((a, b) => a.durationSeconds.compareTo(b.durationSeconds));
+    return _currentShowingReadings;
   }
 
   /// Filters the readings

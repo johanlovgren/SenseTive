@@ -3,7 +3,6 @@ import 'package:sensetive/blocs/history_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
 import 'package:sensetive/pages/result/result.dart';
 import 'package:sensetive/models/reading_models.dart';
-import 'package:sensetive/services/database.dart';
 
 /// Page showing the history of all readings
 class History extends StatefulWidget {
@@ -255,7 +254,6 @@ class ReadingRowWidget extends StatelessWidget {
                 (reading.babyAvgHeartRate != null ? '${reading.babyAvgHeartRate}' : '')
                 + ' bpm'
         ),
-        // trailing: ,
         onTap: () {
           _openReadingResult(context: context, reading: reading);
         },
