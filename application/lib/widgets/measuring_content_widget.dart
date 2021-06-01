@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:sensetive/blocs/timer_event.dart';
+import 'package:sensetive/blocs/measuring_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sensetive/blocs/timer_bloc.dart';
 import 'package:sensetive/blocs/timer_state.dart';
 import 'package:sensetive/widgets/pulsedisplay.dart';
 
+/// [animation] the animations that is displayed when measuring
+/// [measuringBloc] the BLoC that controlls the measuring
 class MeasuringContentWidget extends StatelessWidget {
   final Animation animation;
+  final MeasuringBloc measuringBloc;
 
-  MeasuringContentWidget(this.animation);
+  MeasuringContentWidget(this.animation, this.measuringBloc);
 
   Widget build(BuildContext context) {
     return _measureContent(
@@ -19,7 +22,7 @@ class MeasuringContentWidget extends StatelessWidget {
     final TimerState currentState = timerBloc.state;
     if (currentState is TimerInitial || currentState is TimerRunComplete) {
       return Text(
-        'Welcome Sarah! \n Let\'s start recording \n your measurements',
+        'Welcome! \n Let\'s start recording',
         textAlign: TextAlign.center,
         style: TextStyle(
           color: Colors.indigo,
@@ -52,7 +55,12 @@ class MeasuringContentWidget extends StatelessWidget {
                   )
                 ],
               ),
-              child: PulseDisplayWidget(137));
+              child:
+                  // TODO Fix animation
+                  PulseDisplayWidget(
+                      measuringBloc.getMotherHeartRates().length == 0
+                          ? null
+                          : measuringBloc.getMotherHeartRates().last));
         },
       );
     }

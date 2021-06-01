@@ -46,6 +46,9 @@ dependencies:
   # Used to select profile picture
   image_picker: ^0.7.5
 
+  # UUID package
+  uuid: ^3.0.4
+
   # Provides bloc functionallity 
   flutter_bloc: ^5.0.0
 

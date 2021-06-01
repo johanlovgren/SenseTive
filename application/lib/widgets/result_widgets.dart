@@ -49,7 +49,7 @@ class ReadingHeartRateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _heartRate == null
+    return _heartRate == null || _heartRate.length == 0
         ? Container(width: 0, height: 0)
         : CardWithHeaderWidget(
           text: 'Heart Rate (BPM)',
@@ -95,7 +95,7 @@ class ReadingOxygenLevelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _oxygenLevel == null
+    return _oxygenLevel == null || _oxygenLevel.length == 0
     ? Container(width: 0, height: 0)
     : CardWithHeaderWidget(
         text: 'Oxygen Level',
@@ -125,7 +125,7 @@ class ReadingContractionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _contractions == null
+    return _contractions == null || _contractions.length == 0
       ? Container(width: 0, height: 0)
       : CardWithHeaderWidget(
         text: 'Contractions',

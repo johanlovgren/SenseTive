@@ -5,6 +5,7 @@ import 'package:sensetive/services/database.dart';
 import 'dart:math';
 
 import 'package:sensetive/utils/jwt_decoder.dart';
+import 'package:uuid/uuid.dart';
 
 class DatabaseExample extends StatefulWidget {
   @override
@@ -46,7 +47,7 @@ class _DatabaseExampleState extends State<DatabaseExample> {
     int duration = 60 + Random().nextInt(60*60-200);
     return Reading(
       // Fix better solution for ID's
-        id: Random().nextInt(2^32),
+        id: Uuid().v4(),
         date: DateTime.now().subtract(Duration(days: Random().nextInt(30))),
         durationSeconds: duration,
         momHeartRate: _momRandomHeartRate(duration),

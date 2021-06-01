@@ -5,6 +5,7 @@ import 'package:sensetive/blocs/authentication_bloc.dart';
 import 'package:sensetive/blocs/authentication_bloc_provider.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
 import 'package:sensetive/services/backend.dart';
+import 'package:sensetive/services/backend_api.dart';
 import 'package:sensetive/services/database.dart';
 import 'package:sensetive/utils/jwt_decoder.dart';
 
@@ -33,7 +34,7 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile> {
   AuthenticationBloc _authenticationBloc;
-  BackendService _backendService;
+  BackendApi _backendService;
   DatabaseFileRoutines _databaseFileRoutines;
 
 
@@ -96,7 +97,7 @@ class _EditProfileState extends State<EditProfile> {
     if (pickedFile!= null) {
       _image = File(pickedFile.path);
       print(_image);
-      _databaseFileRoutines.writeProfileImage(_image);
+      await _databaseFileRoutines.writeProfileImage(_image);
       Navigator.of(context).pop();
     } else {
       print('No image selected');
@@ -118,7 +119,7 @@ class _EditProfileState extends State<EditProfile> {
       String uid = DecodedJwt(jwt: jwt).uid;
       DatabaseFileRoutines databaseFileRoutines = DatabaseFileRoutines(uid: uid);
       // Both delete returns true if successful
-      if (await _backendService.deleteAccount(jwt)
+      if (await _backendService.deleteAccount(jwtToken: jwt)
       && await databaseFileRoutines.deleteAllData())
         _authenticationBloc.addLogoutUser.add(true);
     } catch (e) {

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:sensetive/blocs/measuring_bloc.dart';
+import 'package:sensetive/blocs/measuring_bloc_provider.dart';
+import 'package:sensetive/blocs/timer_bloc.dart';
+import 'package:sensetive/classes/ticker.dart';
 import 'package:sensetive/pages/profile.dart';
 import 'history.dart';
 import 'package:sensetive/blocs/home_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
 import 'package:sensetive/pages/measure.dart';
-
-
-
 
 
 class Home extends StatefulWidget {
@@ -16,6 +17,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   HomeBloc _homeBloc;
+  MeasuringBloc _measuringBloc;
 
   static final List<String> _headings = ['Home', 'History', 'Profile'];
   Widget _currentPage;
@@ -27,29 +29,38 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    _listPages
-      ..add(Measure())
-      ..add(History())
-      ..add(Profile());
-    _currentPage = _listPages[_currentIndex];
-    _currentHeading = _headings[_currentIndex];
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _homeBloc = HomeBlocProvider.of(context).homeBloc;
+    _measuringBloc = MeasuringBloc(
+        timerBloc: TimerBloc(ticker: Ticker()),
+        jwt:  HomeBlocProvider.of(context).jwt
+    );
   }
 
 
   @override
   void dispose() {
     _homeBloc.dispose();
+    _measuringBloc.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    _listPages
+      ..add(MeasuringBlocProvider(
+        measuringBloc: _measuringBloc,
+        child: Measure(),
+      ))
+      ..add(History())
+      ..add(Profile());
+    _currentPage = _listPages[_currentIndex];
+    _currentHeading = _headings[_currentIndex];
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_currentHeading),

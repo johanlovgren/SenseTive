@@ -1,10 +1,14 @@
 import 'dart:convert';
+import 'package:sensetive/models/reading_models.dart';
+
 import 'backend_api.dart';
 import 'package:http/http.dart';
 
 /// Backend service used to communicate with the backend
 class BackendService implements BackendApi {
   final String _restApi = 'https://rickebo.com/sensetive';
+  final String _restAccount = '/account';
+  final String _restReading = '/reading';
   final Map<String, String> _header = {
     'Content-Type': 'application/json',
     'Accept-Encoding': '',
@@ -37,9 +41,9 @@ class BackendService implements BackendApi {
   /// Asks the backend to delete the current users account
   ///
   /// [jwtToken] the users JWT token
-  Future<bool> deleteAccount(String jwtToken) async {
+  Future<bool> deleteAccount({String jwtToken}) async {
     final response = await delete(
-      Uri.parse(_restApi + '/account'),
+      Uri.parse(_restApi + _restAccount),
       headers: _header..addEntries([MapEntry('Authorization', jwtToken)]));
     if (response.statusCode == 200) {
       return true;
@@ -47,4 +51,34 @@ class BackendService implements BackendApi {
       throw(Exception('Server connection error: ${response.statusCode}'));
     }
   }
+
+  Future<void> uploadReading({String jwtToken, Reading reading}) async {
+    final response = await post(
+      Uri.parse(_restApi + _restReading),
+      headers: _header..addEntries([MapEntry('Authorization', jwtToken)]),
+      body: jsonEncode({
+        'readingId': reading.id,
+        'duration': reading.durationSeconds,
+        'time': reading.date.millisecondsSinceEpoch ~/ 1000,
+        'parentHeartRateSamples': _convertHeartRate(reading.date, reading.momHeartRate),
+        'childHeartRateSamples': _convertHeartRate(reading.date, reading.babyHeartRate),
+        'contractions': null
+      })
+    );
+    if (response.statusCode != 200)
+      throw(Exception('Could not upload reading to server: ${response.statusCode}'));
+
+  }
+
+  List<Map<String, int>> _convertHeartRate(DateTime date, List<int> heartRate) {
+    int index = 0;
+    int secondsSinceEpoc = date.millisecondsSinceEpoch ~/ 1000;
+    return List.from(heartRate.map((x)
+      => {
+        'time': secondsSinceEpoc + index++,
+        'heartRate': x
+      }
+    ));
+  }
 }
+

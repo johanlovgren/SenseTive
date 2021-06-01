@@ -1,6 +1,10 @@
+import 'package:sensetive/models/reading_models.dart';
+
 /// Interface that the backend service must implement
 abstract class BackendApi {
   Future<String> signIn({String method, String token});
+  Future<bool> deleteAccount({String jwtToken});
+  Future<void> uploadReading({String jwtToken, Reading reading});
 }
 
 /// Login event
