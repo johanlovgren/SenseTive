@@ -29,8 +29,6 @@ class MeasuringBloc {
   final BluetoothService _bluetoothService = BluetoothService();
   final List<int> _motherHeartRates = [];
   final List<int> _babyHeartRates = [];
-  //AnimationController animationController;
-  //Animation animation;
 
   /// Stream for checking actions performed to the timer
   final StreamController<int> _timerEventController = StreamController<int>();
@@ -70,17 +68,17 @@ class MeasuringBloc {
     });
   }
 
-  /// Adds a heartrate to a list of heartrates
+  /// Adds a heart rate to a list of heartrates
   void _addHeartRate(int heartRate, List<int> heartRates) {
     heartRates.add(heartRate);
   }
 
-  /// Get the heartrates of the mother
+  /// Get the heart rates of the mother
   List<int> getMotherHeartRates() {
     return _motherHeartRates;
   }
 
-  /// Get the heartrates of the baby
+  /// Get the heart rates of the baby
   List<int> getBabyHeartRates() {
     return _babyHeartRates;
   }
@@ -107,7 +105,7 @@ class MeasuringBloc {
   void completeReading(int duration) async {
     Reading newReading = Reading(
         id: Uuid().v4(),
-        date: DateTime.now().subtract(Duration(seconds: duration)),
+        date: DateTime.now().subtract(Duration(seconds: duration)).toUtc(),
         durationSeconds: duration,
         momHeartRate: _motherHeartRates,
         babyHeartRate: _babyHeartRates,
