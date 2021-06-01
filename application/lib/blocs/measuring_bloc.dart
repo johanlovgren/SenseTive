@@ -93,7 +93,7 @@ class MeasuringBloc {
         .writeReadings(databaseToJson(_readingsDatabase));
 
     // Store reading remote
-    _backendApi
+    await _backendApi
         .uploadReading(jwtToken: jwt, reading: reading)
         .catchError((error) {
       // TODO handle error

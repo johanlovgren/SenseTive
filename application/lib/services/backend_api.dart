@@ -5,6 +5,8 @@ abstract class BackendApi {
   Future<String> signIn({String method, String token});
   Future<bool> deleteAccount({String jwtToken});
   Future<void> uploadReading({String jwtToken, Reading reading});
+  Future<List<Reading>> fetchReadings({String jwtToken, DateTime date});
+  Future<void> deleteReading({String jwtToken, String readingId});
 }
 
 /// Login event

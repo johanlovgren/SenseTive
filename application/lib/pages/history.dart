@@ -19,7 +19,6 @@ class _HistoryState extends State<History> {
   @override
   void initState() {
     super.initState();
-
   }
 
 
@@ -27,6 +26,9 @@ class _HistoryState extends State<History> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _historyBloc = HistoryBloc(jwt: HomeBlocProvider.of(context).jwt);
+    _historyBloc.getError.listen((errorMessage) {
+      _showErrorSnackbar(errorMessage);
+    });
     sortBy = _historyBloc.sortAlternatives[0];
   }
 
@@ -230,6 +232,14 @@ class _HistoryState extends State<History> {
             ],
           );
         });
+  }
+
+  void _showErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      )
+    );
   }
 }
 

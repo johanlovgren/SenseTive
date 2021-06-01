@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -93,7 +94,7 @@ class DatabaseFileRoutines {
       final file = await _localReadingsFile;
       if (!file.existsSync()) {
         print('File does not exist: ${file.absolute}');
-        await writeReadings('{"readings": []}');
+        await writeReadings(ReadingsDatabase.emptyTemplate);
       }
 
       String contents = await file.readAsString();
@@ -153,16 +154,20 @@ class UserDatabase extends Database {
 
 /// Database containing data to be stored in persistent storage
 class ReadingsDatabase extends Database {
+  static const emptyTemplate = '{"readings": [], "updatedAt": null}';
   List<Reading> readings;
-  ReadingsDatabase({this.readings});
+  DateTime updatedAt;
+  ReadingsDatabase({this.readings, this.updatedAt});
 
   factory ReadingsDatabase.fromJson(Map<String, dynamic> json) =>
       ReadingsDatabase(
-          readings: List<Reading>.from(json["readings"].map((x) => Reading.fromJson(x)))
+          readings: List<Reading>.from(json["readings"].map((x) => Reading.fromJson(x))),
+          updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']): null
       );
 
   /// Returns the database as JSON
   Map<String, dynamic> toJson() => {
-    "readings": List<dynamic>.from(readings.map((x) => x.toJson()))
+    "readings": List<dynamic>.from(readings.map((x) => x.toJson())),
+    'updatedAt': updatedAt != null ? updatedAt.toString() : null
   };
 }

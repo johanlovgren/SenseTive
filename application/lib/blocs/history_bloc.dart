@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:sensetive/models/reading_models.dart';
+import 'package:sensetive/services/backend.dart';
+import 'package:sensetive/services/backend_api.dart';
 import 'package:sensetive/services/database.dart';
 import 'package:sensetive/utils/jwt_decoder.dart';
 
@@ -18,6 +20,7 @@ class HistoryBloc {
   DatabaseFileRoutines _databaseFileRoutines;
   ReadingsDatabase _readingDatabase;
   List<Reading> _currentShowingReadings;
+  BackendApi _backendApi = BackendService();
 
   /// Stream used for the list of readings
   final StreamController<List<Reading>> _readingListController = StreamController<List<Reading>>();
@@ -36,10 +39,23 @@ class HistoryBloc {
   Sink<String> get addSort => _sortController.sink;
   Stream<String> get sort => _sortController.stream;
 
+  final StreamController<String> _errorController = StreamController.broadcast();
+  Sink<String> get _addError => _errorController.sink;
+  Stream<String> get getError => _errorController.stream;
+
   HistoryBloc({this.jwt}) {
     _databaseFileRoutines = DatabaseFileRoutines(uid: DecodedJwt(jwt: jwt).uid);
     _databaseFileRoutines.readReadings().then((readingsJson) {
       _readingDatabase = readingsDatabaseFromJson(readingsJson);
+      _fetchRemoteReadings(jwtToken: jwt).then((remoteReadings) {
+        if (remoteReadings.length == 0)
+          return;
+        _readingDatabase.readings.addAll(remoteReadings);
+        _databaseFileRoutines.writeReadings(databaseToJson(_readingDatabase));
+        _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
+        _currentShowingReadings = _readingDatabase.readings;
+        _addReadingList.add(_currentShowingReadings);
+      });
       _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
       _currentShowingReadings = _readingDatabase.readings;
       _addReadingList.add(_currentShowingReadings);
@@ -47,14 +63,36 @@ class HistoryBloc {
     _startListeners();
   }
 
+  Future<List<Reading>> _fetchRemoteReadings({String jwtToken}) async {
+    try {
+      List<Reading> remoteReadings;
+      if (_readingDatabase.readings.length == 0 || _readingDatabase.updatedAt == null) {
+        remoteReadings = await _backendApi.fetchReadings(jwtToken: jwt);
+      } else {
+        DateTime mostRecent = _readingDatabase.updatedAt;
+        remoteReadings = await _backendApi.fetchReadings(jwtToken: jwt, date: mostRecent);
+      }
+      _readingDatabase.updatedAt = DateTime.now();
+      return remoteReadings;
+    } catch (e) {
+      _addError.add(e.message);
+      return [];
+    }
+  }
+
   /// Starts the stream listeners
   void _startListeners() {
-    removeReading.listen((index) {
-      _currentShowingReadings.removeAt(index);
+    removeReading.listen((index) async {
+      String readingId = _currentShowingReadings[index].id;
       _readingDatabase.readings.removeWhere((reading)
-        => reading.id == _currentShowingReadings[index].id);
+      => reading.id == readingId);
       _addReadingList.add(_currentShowingReadings);
       _databaseFileRoutines.writeReadings(databaseToJson(_readingDatabase));
+      try {
+        await _backendApi.deleteReading(jwtToken: jwt, readingId: readingId);
+      } catch (e) {
+        _addError.add(e.message);
+      }
     });
     filter.listen((filterBy) {
       _currentShowingReadings = _filterReadings(filterBy, _readingDatabase.readings);
@@ -113,5 +151,6 @@ class HistoryBloc {
     _filterController.close();
     _removeReadingController.close();
     _sortController.close();
+    _errorController.close();
   }
 }
