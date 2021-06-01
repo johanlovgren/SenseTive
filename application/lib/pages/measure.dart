@@ -92,7 +92,8 @@ class _MeasureState extends State<Measure> with SingleTickerProviderStateMixin {
                   BlocBuilder<TimerBloc, TimerState>(
                       buildWhen: (previousState, state) =>
                           state.runtimeType != previousState.runtimeType,
-                      builder: (context, state) => TimerActions()),
+                      builder: (context, state) =>
+                          TimerActions(_animationController)),
                   Padding(
                     padding: const EdgeInsets.only(top: 50.0),
                     child: BlocBuilder<TimerBloc, TimerState>(

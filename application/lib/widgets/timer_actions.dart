@@ -15,19 +15,24 @@ class TimerEvents {
 
 /// Builds the action available to perform on the timer
 class TimerActions extends StatelessWidget {
+  final AnimationController animationController;
+
+  TimerActions(this.animationController);
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: _mapStateToActionButtons(
-          timerBloc: BlocProvider.of<TimerBloc>(context),
-          measuringBloc: MeasuringBlocProvider.of(context).measuringBloc),
-    );
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: _mapStateToActionButtons(
+            timerBloc: BlocProvider.of<TimerBloc>(context),
+            measuringBloc: MeasuringBlocProvider.of(context).measuringBloc,
+            animationController: animationController));
   }
 
   /// Builds action buttons depending on the state of timer
   List<Widget> _mapStateToActionButtons(
-      {TimerBloc timerBloc, MeasuringBloc measuringBloc}) {
+      {TimerBloc timerBloc,
+      MeasuringBloc measuringBloc,
+      AnimationController animationController}) {
     final TimerState currentState = timerBloc.state;
     if (currentState is TimerInitial || currentState is TimerRunComplete) {
       return [
@@ -48,6 +53,7 @@ class TimerActions extends StatelessWidget {
         FloatingActionButton(
           child: Icon(Icons.pause),
           onPressed: () {
+            if (animationController.isAnimating) animationController.reset();
             measuringBloc.addTimerEvent.add(TimerEvents.pause);
             print("current duration: " +
                 timerBloc.getCurrentDuration().toString());
@@ -67,6 +73,7 @@ class TimerActions extends StatelessWidget {
         FloatingActionButton(
           child: Icon(Icons.play_arrow),
           onPressed: () {
+            if (!animationController.isAnimating) animationController.forward();
             timerBloc.add(TimerResumed());
             measuringBloc.addTimerEvent.add(TimerEvents.start);
           },
