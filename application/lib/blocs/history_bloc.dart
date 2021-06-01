@@ -50,6 +50,7 @@ class HistoryBloc {
       _fetchRemoteReadings(jwtToken: jwt).then((remoteReadings) {
         if (remoteReadings.length == 0)
           return;
+        
         _readingDatabase.readings.addAll(remoteReadings);
         _databaseFileRoutines.writeReadings(databaseToJson(_readingDatabase));
         _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));

@@ -83,7 +83,7 @@ class BackendService implements BackendApi {
   /// [readingId] The id of the reading to be removed
   Future<void> deleteReading({String jwtToken, String readingId}) async {
     final response = await delete(
-        Uri.parse(_restApi + _restReading + '/reading?id=' + readingId),
+        Uri.parse(_restApi + _restReading + '?id=' + readingId),
         headers: _header..addEntries([MapEntry('Authorization', jwtToken)])
     );
     if (response.statusCode != 200) {
