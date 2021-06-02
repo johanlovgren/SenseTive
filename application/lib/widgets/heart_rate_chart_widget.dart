@@ -55,7 +55,7 @@ class HearRateLineChartWidget extends StatelessWidget {
           tooltipBgColor: Colors.transparent,
         ),
         touchCallback: (LineTouchResponse touchResponse) {},
-        handleBuiltInTouches: true
+        handleBuiltInTouches: true,
       ),
       gridData: FlGridData(
         show: false
@@ -113,11 +113,6 @@ class HearRateLineChartWidget extends StatelessWidget {
         bottomTitle: AxisTitle(
           showTitle: true,
           titleText: 'Time (h:m:s)',
-          /*
-          titleText: _values.length < 5 * 60
-          ? 'Seconds'
-          : 'Minutes',
-           */
           margin: 0,
           textStyle: TextStyle(
               color: Colors.indigo,
