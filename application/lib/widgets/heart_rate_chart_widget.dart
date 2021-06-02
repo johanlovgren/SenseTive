@@ -12,7 +12,7 @@ class HearRateLineChartWidget extends StatelessWidget {
     const Color(0xFF5620FF),
   ];
 
-  // TODO Might need changes
+
   HearRateLineChartWidget(List<int> heartRate) {
     for (int i = 0; i < heartRate.length; i++) {
       _values.add(FlSpot(i.toDouble(), heartRate[i].toDouble()));
@@ -70,25 +70,16 @@ class HearRateLineChartWidget extends StatelessWidget {
             fontSize: 12
           ),
           margin: 10,
+          interval: 1,
           getTitles: (value) {
-            if (_values.length < 10) {
-              return value.toInt() % 2 == 0
-                  ? value.toString()
-                  : '';
-            }
-            else if (_values.length < 5 * 60) {
-              return value.toInt() % 10 == 0
-                  ? value.toString()
-                  : '';
-            } else if (_values.length < 10 * 60) {
-              return value.toInt() % (5 * 60) == 0
-                  ? value.toString()
-                  : '';
-            } else {
-              return value.toInt() % (10 * 60) == 0
-                  ? value.toString()
-                  : '';
-            }
+            if (value % (_values.length ~/4) != 0)
+              return '';
+            int _hours = (value ~/ (60 * 60));
+            int _minutes = (value - _hours * (60 * 60)) ~/ 60;
+            int _seconds = (value - _hours * (60 * 60) - _minutes * 60).toInt();
+            return (_hours > 0 ? '$_hours:' : '') +
+                (_hours > 0 && _minutes < 10? '0$_minutes:' : '$_minutes:') +
+                '$_seconds';
           }
         ),
         leftTitles: SideTitles(
@@ -121,9 +112,12 @@ class HearRateLineChartWidget extends StatelessWidget {
         ),
         bottomTitle: AxisTitle(
           showTitle: true,
+          titleText: 'Time (h:m:s)',
+          /*
           titleText: _values.length < 5 * 60
           ? 'Seconds'
           : 'Minutes',
+           */
           margin: 0,
           textStyle: TextStyle(
               color: Colors.indigo,
@@ -166,7 +160,7 @@ class HearRateLineChartWidget extends StatelessWidget {
       colors: [
         Colors.indigo.shade300
       ],
-      barWidth: 2,
+      barWidth: 0.5,
       isStrokeCapRound: true,
       dotData: FlDotData(
         show: false
