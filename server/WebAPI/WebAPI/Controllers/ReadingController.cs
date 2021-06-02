@@ -63,11 +63,11 @@ namespace WebAPI.Controllers
                 .ConfigureAwait(false);
 
             if (readings == null || !readings.Any())
-                return NotFound();
+                return Ok(Enumerable.Empty<Reading>());
 
             return Ok(await Task.WhenAll(readings.Select(async reading =>
             {
-                var localTable = await _database.Table<DbNumericReadingEntry>()
+                await using var localTable = await _database.Table<DbNumericReadingEntry>()
                     .ConfigureAwait(false);
 
                 var readingEntries = includeHeartRate 
