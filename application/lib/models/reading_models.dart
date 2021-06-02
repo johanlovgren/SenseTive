@@ -1,9 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 /// Model containing a reading
 class Reading {
   final String id;
-  final DateTime date;
+  final DateTime _date;
   final int durationSeconds;
   final List<int> momHeartRate;
   int momAvgHeartRate;
@@ -12,13 +13,13 @@ class Reading {
   final List<int> oxygenLevel;
   final List<Contraction> contractions;
 
-  Reading({this.id,
-    this.date,
-    this.durationSeconds,
-    this.momHeartRate,
-    this.babyHeartRate,
+  Reading({@required this.id,
+    @required DateTime date,
+    @required this.durationSeconds,
+    @required this.momHeartRate,
+    @required this.babyHeartRate,
     this.oxygenLevel,
-    this.contractions}) {
+    this.contractions}) : _date = date {
     momAvgHeartRate = momHeartRate != null && momHeartRate.length != 0
         ? (momHeartRate.reduce((a, b) => a+b) / momHeartRate.length).round()
         : null;
@@ -27,6 +28,7 @@ class Reading {
         : null;
   }
 
+  DateTime get date => _date.toLocal();
 
   @override
   String toString() {
@@ -107,5 +109,7 @@ String durationToString(int durationSeconds) {
   int hours = (durationSeconds ~/ (60 * 60));
   int minutes = (durationSeconds - hours * (60 * 60)) ~/ 60;
   int seconds = (durationSeconds - hours * (60 * 60) - minutes * 60);
-  return (hours > 0 ? '$hours:' : '') + '$minutes:' + '$seconds';
+  return (hours > 0 ? '${hours}h' : '') +
+      (minutes > 0 ? ' ${minutes}m' : '') +
+      ' ${seconds}s';
 }

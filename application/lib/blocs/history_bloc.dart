@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:sensetive/models/reading_models.dart';
+import 'package:sensetive/services/backend.dart';
+import 'package:sensetive/services/backend_api.dart';
 import 'package:sensetive/services/database.dart';
 import 'package:sensetive/utils/jwt_decoder.dart';
 
@@ -8,7 +10,7 @@ class HistoryBloc {
   /// List containing the sorting alternatives, order does matter,
   /// see _filterReadings()
 
-  final List<String> sortAlternatives = const [
+  static const List<String> sortAlternatives = const [
     'Most recent',
     'Oldest',
     'Longest',
@@ -17,6 +19,8 @@ class HistoryBloc {
   final String jwt;
   DatabaseFileRoutines _databaseFileRoutines;
   ReadingsDatabase _readingDatabase;
+  List<Reading> _currentShowingReadings;
+  BackendApi _backendApi = BackendService();
 
   /// Stream used for the list of readings
   final StreamController<List<Reading>> _readingListController = StreamController<List<Reading>>();
@@ -35,25 +39,83 @@ class HistoryBloc {
   Sink<String> get addSort => _sortController.sink;
   Stream<String> get sort => _sortController.stream;
 
+  final StreamController<String> _errorController = StreamController.broadcast();
+  Sink<String> get _addError => _errorController.sink;
+  Stream<String> get getError => _errorController.stream;
+
+  final StreamController<bool> _fetchController = StreamController.broadcast();
+  Sink<bool> get addFetchReadings => _fetchController.sink;
+  Stream<bool> get fetchRequests => _fetchController.stream;
+
+
   HistoryBloc({this.jwt}) {
     _databaseFileRoutines = DatabaseFileRoutines(uid: DecodedJwt(jwt: jwt).uid);
     _databaseFileRoutines.readReadings().then((readingsJson) {
       _readingDatabase = readingsDatabaseFromJson(readingsJson);
-      _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
-      _addReadingList.add(_readingDatabase.readings);
+      _fetchRemoteReadings(jwtToken: jwt).then((remoteReadings) {
+        if (remoteReadings.length == 0)
+          return;
+        remoteReadings.forEach((r) => _readingDatabase.readings.putIfAbsent(r.id, () => r));
+        _databaseFileRoutines.writeReadings(databaseToJson(_readingDatabase));
+        _currentShowingReadings = List<Reading>.from(_readingDatabase.readings.values);
+        _currentShowingReadings.sort((a, b) => b.date.compareTo(a.date));
+        _addReadingList.add(_currentShowingReadings);
+      });
+      _currentShowingReadings = List<Reading>.from(_readingDatabase.readings.values);
+      _currentShowingReadings.sort((a, b) => b.date.compareTo(a.date));
+      _addReadingList.add(_currentShowingReadings);
     });
     _startListeners();
   }
 
+
+  Future<List<Reading>> _fetchRemoteReadings({String jwtToken}) async {
+    try {
+      List<Reading> remoteReadings;
+      if (_readingDatabase.readings.length == 0 || _readingDatabase.updatedAt == null) {
+        remoteReadings = await _backendApi.fetchReadings(jwtToken: jwt);
+      } else {
+        DateTime mostRecent = _readingDatabase.updatedAt;
+        remoteReadings = await _backendApi.fetchReadings(jwtToken: jwt, date: mostRecent);
+      }
+      _readingDatabase.updatedAt = DateTime.now();
+      return remoteReadings;
+    } catch (e) {
+      _addError.add(e.message);
+      return [];
+    }
+  }
+
   /// Starts the stream listeners
   void _startListeners() {
-    removeReading.listen((index) {
-      _readingDatabase.readings.removeAt(index);
-      _addReadingList.add(_readingDatabase.readings);
+    fetchRequests.listen((fetch) {
+      if(!fetch)
+        return;
+      _fetchRemoteReadings(jwtToken: jwt).then((remoteReadings) {
+        if (remoteReadings.length == 0)
+          return;
+        remoteReadings.forEach((r) => _readingDatabase.readings.putIfAbsent(r.id, () => r));
+        _databaseFileRoutines.writeReadings(databaseToJson(_readingDatabase));
+        _currentShowingReadings = List<Reading>.from(_readingDatabase.readings.values);
+        _currentShowingReadings.sort((a, b) => b.date.compareTo(a.date));
+        _addReadingList.add(_currentShowingReadings);
+      });
+    });
+    removeReading.listen((index) async {
+      String readingId = _currentShowingReadings[index].id;
+      _readingDatabase.readings.remove(readingId);
+      _currentShowingReadings.removeAt(index);
+      _addReadingList.add(_currentShowingReadings);
       _databaseFileRoutines.writeReadings(databaseToJson(_readingDatabase));
+      try {
+        await _backendApi.deleteReading(jwtToken: jwt, readingId: readingId);
+      } catch (e) {
+        _addError.add(e.message);
+      }
     });
     filter.listen((filterBy) {
-      _addReadingList.add(_filterReadings(filterBy, _readingDatabase.readings));
+      _currentShowingReadings = _filterReadings(filterBy, List<Reading>.from(_readingDatabase.readings.values));
+      _addReadingList.add(_currentShowingReadings);
     });
     sort.listen((index) {
       _addReadingList.add(_sortReadings(index));
@@ -65,14 +127,14 @@ class HistoryBloc {
   /// [sortBy] what to sort the readings by, see [sortAlternatives]
   List<Reading> _sortReadings(String sortBy) {
     if (sortBy == sortAlternatives[0])
-      _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
+      _currentShowingReadings.sort((a, b) => b.date.compareTo(a.date));
     else if (sortBy == sortAlternatives[1])
-      _readingDatabase.readings.sort((a, b) => a.date.compareTo(b.date));
+      _currentShowingReadings.sort((a, b) => a.date.compareTo(b.date));
     else if (sortBy == sortAlternatives[2])
-      _readingDatabase.readings.sort((a, b) => b.durationSeconds.compareTo(a.durationSeconds));
+      _currentShowingReadings.sort((a, b) => b.durationSeconds.compareTo(a.durationSeconds));
     else if (sortBy == sortAlternatives[3])
-      _readingDatabase.readings.sort((a, b) => a.durationSeconds.compareTo(b.durationSeconds));
-    return _readingDatabase.readings;
+      _currentShowingReadings.sort((a, b) => a.durationSeconds.compareTo(b.durationSeconds));
+    return _currentShowingReadings;
   }
 
   /// Filters the readings
@@ -108,5 +170,7 @@ class HistoryBloc {
     _filterController.close();
     _removeReadingController.close();
     _sortController.close();
+    _errorController.close();
+    _fetchController.close();
   }
 }

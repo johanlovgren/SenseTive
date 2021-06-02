@@ -49,7 +49,7 @@ class _WelcomeState extends State<Welcome> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'This is your first time using SenseTive, please enter your full name',
+                              'This is your first time using SenseTive on this device, please enter your full name',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   color: Colors.black,

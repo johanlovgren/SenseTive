@@ -52,6 +52,12 @@ class BackendService implements BackendApi {
     }
   }
 
+  /// Upload a reading at the backend
+  ///
+  /// Throws and Exception on failure
+  ///
+  /// [jwtToken] The users JWT Token
+  /// [reading] The reading to upload
   Future<void> uploadReading({String jwtToken, Reading reading}) async {
     final response = await post(
       Uri.parse(_restApi + _restReading),
@@ -60,17 +66,69 @@ class BackendService implements BackendApi {
         'readingId': reading.id,
         'duration': reading.durationSeconds,
         'time': reading.date.millisecondsSinceEpoch ~/ 1000,
-        'parentHeartRateSamples': _convertHeartRate(reading.date, reading.momHeartRate),
-        'childHeartRateSamples': _convertHeartRate(reading.date, reading.babyHeartRate),
+        'parentHeartRateSamples': _convertHeartRateToServer(reading.date, reading.momHeartRate),
+        'childHeartRateSamples': _convertHeartRateToServer(reading.date, reading.babyHeartRate),
         'contractions': null
       })
     );
     if (response.statusCode != 200)
       throw(Exception('Could not upload reading to server: ${response.statusCode}'));
-
   }
 
-  List<Map<String, int>> _convertHeartRate(DateTime date, List<int> heartRate) {
+  /// Asks the backend to remove a reading
+  ///
+  /// Throws an Exception on failure
+  ///
+  /// [jwtToken] The users JWT Token
+  /// [readingId] The id of the reading to be removed
+  Future<void> deleteReading({String jwtToken, String readingId}) async {
+    final response = await delete(
+        Uri.parse(_restApi + _restReading + '?id=' + readingId),
+        headers: _header..addEntries([MapEntry('Authorization', jwtToken)])
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Could not delete reading at server: ${response.statusCode}');
+    }
+  }
+
+  /// Asks the backend for readings
+  ///
+  /// Throws an Exception on failure, otherwise it returns a List of readings
+  ///
+  /// [jwtToken] The users JWT Token
+  /// [date] If set, asks the server for readings created after [date].
+  /// If null, all the users readings are asked for
+  Future<List<Reading>> fetchReadings({String jwtToken, DateTime date}) async {
+    final response = await get(
+      Uri.parse(_restApi + _restReading +
+          (date == null
+              ? ''
+              :'?after=' + (date.millisecondsSinceEpoch ~/ 1000).toString()
+              + '&includeHeartRate=true')),
+      headers: _header..addEntries([MapEntry('Authorization', jwtToken)]),
+    );
+    if (response.statusCode != 200)
+      throw(Exception('Could not fetch readings from server: ${response.statusCode}'));
+
+    List<dynamic> responseBody = json.decode(response.body);
+    List<Reading> readings = List.from(responseBody.map((r) => Reading(
+        id: r['readingId'],
+        durationSeconds: r['duration'],
+        date: DateTime.fromMillisecondsSinceEpoch(r['time'] * 1000),
+        momHeartRate: _convertHeartRateFromServer(r['parentHeartRateSamples']),
+        babyHeartRate: _convertHeartRateFromServer(r['childHeartRateSamples']),
+        // Implement when server supports
+        contractions: null
+    )));
+    return readings;
+  }
+
+  /// Convert the heart rate format received from the server
+  List<int> _convertHeartRateFromServer(List<dynamic> readings) {
+    return List<int>.from(readings.map((r) => r['heartRate']));
+  }
+  /// Converts the heart rate format to the server format
+  List<Map<String, int>> _convertHeartRateToServer(DateTime date, List<int> heartRate) {
     int index = 0;
     int secondsSinceEpoc = date.millisecondsSinceEpoch ~/ 1000;
     return List.from(heartRate.map((x)

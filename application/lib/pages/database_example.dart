@@ -36,7 +36,8 @@ class _DatabaseExampleState extends State<DatabaseExample> {
               _readingDatabase = readingsDatabaseFromJson(readingsJson);
             });
           }
-          _readingDatabase.readings.add(dummyReading());
+          Reading newReading = dummyReading();
+          _readingDatabase.readings.addEntries([MapEntry(newReading.id, newReading)]);
           DatabaseFileRoutines(uid: _uid).writeReadings(databaseToJson(_readingDatabase));
         },
       ),

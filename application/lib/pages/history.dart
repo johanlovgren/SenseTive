@@ -3,7 +3,6 @@ import 'package:sensetive/blocs/history_bloc.dart';
 import 'package:sensetive/blocs/home_bloc_provider.dart';
 import 'package:sensetive/pages/result/result.dart';
 import 'package:sensetive/models/reading_models.dart';
-import 'package:sensetive/services/database.dart';
 
 /// Page showing the history of all readings
 class History extends StatefulWidget {
@@ -20,7 +19,6 @@ class _HistoryState extends State<History> {
   @override
   void initState() {
     super.initState();
-
   }
 
 
@@ -28,7 +26,10 @@ class _HistoryState extends State<History> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _historyBloc = HistoryBloc(jwt: HomeBlocProvider.of(context).jwt);
-    sortBy = _historyBloc.sortAlternatives[0];
+    _historyBloc.getError.listen((errorMessage) {
+      _showErrorSnackbar(errorMessage);
+    });
+    sortBy = HistoryBloc.sortAlternatives[0];
   }
 
   @override
@@ -46,11 +47,16 @@ class _HistoryState extends State<History> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         return !snapshot.hasData
             ? Center(child: CircularProgressIndicator())
-            : CustomScrollView(
-          slivers: [
-            _buildSliverAppBar(),
-            _buildSliverList(snapshot)
-          ],
+            : RefreshIndicator(
+          onRefresh: () async {
+            _historyBloc.addFetchReadings.add(true);
+          },
+          child: CustomScrollView(
+            slivers: [
+              _buildSliverAppBar(),
+              _buildSliverList(snapshot)
+            ],
+          ),
         );
       },
     );
@@ -112,7 +118,7 @@ class _HistoryState extends State<History> {
             ),
           ),
           itemBuilder: (BuildContext context) {
-            return _historyBloc.sortAlternatives.map((alternative) =>
+            return HistoryBloc.sortAlternatives.map((alternative) =>
                 PopupMenuItem<String>(
                     child: Text(alternative),
                     value: alternative
@@ -232,6 +238,14 @@ class _HistoryState extends State<History> {
           );
         });
   }
+
+  void _showErrorSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+        )
+    );
+  }
 }
 
 /// Widget displaying a reading in the [SliverList], when a reading is pressed,
@@ -255,7 +269,6 @@ class ReadingRowWidget extends StatelessWidget {
                 (reading.babyAvgHeartRate != null ? '${reading.babyAvgHeartRate}' : '')
                 + ' bpm'
         ),
-        // trailing: ,
         onTap: () {
           _openReadingResult(context: context, reading: reading);
         },
