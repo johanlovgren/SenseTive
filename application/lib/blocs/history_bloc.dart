@@ -43,6 +43,11 @@ class HistoryBloc {
   Sink<String> get _addError => _errorController.sink;
   Stream<String> get getError => _errorController.stream;
 
+  final StreamController<bool> _fetchController = StreamController.broadcast();
+  Sink<bool> get addFetchReadings => _fetchController.sink;
+  Stream<bool> get fetchRequests => _fetchController.stream;
+
+
   HistoryBloc({this.jwt}) {
     _databaseFileRoutines = DatabaseFileRoutines(uid: DecodedJwt(jwt: jwt).uid);
     _databaseFileRoutines.readReadings().then((readingsJson) {
@@ -63,6 +68,7 @@ class HistoryBloc {
     _startListeners();
   }
 
+
   Future<List<Reading>> _fetchRemoteReadings({String jwtToken}) async {
     try {
       List<Reading> remoteReadings;
@@ -82,6 +88,19 @@ class HistoryBloc {
 
   /// Starts the stream listeners
   void _startListeners() {
+    fetchRequests.listen((fetch) {
+      if(!fetch)
+        return;
+      _fetchRemoteReadings(jwtToken: jwt).then((remoteReadings) {
+        if (remoteReadings.length == 0)
+          return;
+        remoteReadings.forEach((r) => _readingDatabase.readings.putIfAbsent(r.id, () => r));
+        _databaseFileRoutines.writeReadings(databaseToJson(_readingDatabase));
+        _currentShowingReadings = List<Reading>.from(_readingDatabase.readings.values);
+        _currentShowingReadings.sort((a, b) => b.date.compareTo(a.date));
+        _addReadingList.add(_currentShowingReadings);
+      });
+    });
     removeReading.listen((index) async {
       String readingId = _currentShowingReadings[index].id;
       _readingDatabase.readings.remove(readingId);
@@ -152,5 +171,6 @@ class HistoryBloc {
     _removeReadingController.close();
     _sortController.close();
     _errorController.close();
+    _fetchController.close();
   }
 }

@@ -47,11 +47,16 @@ class _HistoryState extends State<History> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         return !snapshot.hasData
             ? Center(child: CircularProgressIndicator())
-            : CustomScrollView(
-          slivers: [
-            _buildSliverAppBar(),
-            _buildSliverList(snapshot)
-          ],
+            : RefreshIndicator(
+          onRefresh: () async {
+            _historyBloc.addFetchReadings.add(true);
+          },
+          child: CustomScrollView(
+            slivers: [
+              _buildSliverAppBar(),
+              _buildSliverList(snapshot)
+            ],
+          ),
         );
       },
     );
@@ -236,9 +241,9 @@ class _HistoryState extends State<History> {
 
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      )
+        SnackBar(
+          content: Text(message),
+        )
     );
   }
 }
