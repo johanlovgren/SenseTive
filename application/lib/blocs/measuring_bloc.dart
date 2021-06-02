@@ -88,7 +88,7 @@ class MeasuringBloc {
     // Store reading locally
     _readingsDatabase =
         readingsDatabaseFromJson(await _databaseFileRoutines.readReadings());
-    _readingsDatabase.readings.add(reading);
+    _readingsDatabase.readings.addEntries([MapEntry(reading.id, reading)]);
     await _databaseFileRoutines
         .writeReadings(databaseToJson(_readingsDatabase));
 

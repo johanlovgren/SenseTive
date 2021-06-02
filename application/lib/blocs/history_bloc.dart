@@ -10,7 +10,7 @@ class HistoryBloc {
   /// List containing the sorting alternatives, order does matter,
   /// see _filterReadings()
 
-  final List<String> sortAlternatives = const [
+  static const List<String> sortAlternatives = const [
     'Most recent',
     'Oldest',
     'Longest',
@@ -50,15 +50,14 @@ class HistoryBloc {
       _fetchRemoteReadings(jwtToken: jwt).then((remoteReadings) {
         if (remoteReadings.length == 0)
           return;
-        
-        _readingDatabase.readings.addAll(remoteReadings);
+        remoteReadings.forEach((r) => _readingDatabase.readings.putIfAbsent(r.id, () => r));
         _databaseFileRoutines.writeReadings(databaseToJson(_readingDatabase));
-        _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
-        _currentShowingReadings = _readingDatabase.readings;
+        _currentShowingReadings = List<Reading>.from(_readingDatabase.readings.values);
+        _currentShowingReadings.sort((a, b) => b.date.compareTo(a.date));
         _addReadingList.add(_currentShowingReadings);
       });
-      _readingDatabase.readings.sort((a, b) => b.date.compareTo(a.date));
-      _currentShowingReadings = _readingDatabase.readings;
+      _currentShowingReadings = List<Reading>.from(_readingDatabase.readings.values);
+      _currentShowingReadings.sort((a, b) => b.date.compareTo(a.date));
       _addReadingList.add(_currentShowingReadings);
     });
     _startListeners();
@@ -85,8 +84,8 @@ class HistoryBloc {
   void _startListeners() {
     removeReading.listen((index) async {
       String readingId = _currentShowingReadings[index].id;
-      _readingDatabase.readings.removeWhere((reading)
-      => reading.id == readingId);
+      _readingDatabase.readings.remove(readingId);
+      _currentShowingReadings.removeAt(index);
       _addReadingList.add(_currentShowingReadings);
       _databaseFileRoutines.writeReadings(databaseToJson(_readingDatabase));
       try {
@@ -96,7 +95,7 @@ class HistoryBloc {
       }
     });
     filter.listen((filterBy) {
-      _currentShowingReadings = _filterReadings(filterBy, _readingDatabase.readings);
+      _currentShowingReadings = _filterReadings(filterBy, List<Reading>.from(_readingDatabase.readings.values));
       _addReadingList.add(_currentShowingReadings);
     });
     sort.listen((index) {

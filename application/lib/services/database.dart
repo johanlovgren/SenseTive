@@ -155,19 +155,20 @@ class UserDatabase extends Database {
 /// Database containing data to be stored in persistent storage
 class ReadingsDatabase extends Database {
   static const emptyTemplate = '{"readings": [], "updatedAt": null}';
-  List<Reading> readings;
+  Map<String, Reading> readings;
   DateTime updatedAt;
   ReadingsDatabase({this.readings, this.updatedAt});
 
   factory ReadingsDatabase.fromJson(Map<String, dynamic> json) =>
       ReadingsDatabase(
-          readings: List<Reading>.from(json["readings"].map((x) => Reading.fromJson(x))),
+          //readings: List<Reading>.from(json["readings"].map((x) => Reading.fromJson(x))),
+          readings: Map<String, Reading>.fromIterable(json["readings"], key: (e) => Reading.fromJson(e).id, value: (e) => Reading.fromJson(e)),
           updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']): null
       );
 
   /// Returns the database as JSON
   Map<String, dynamic> toJson() => {
-    "readings": List<dynamic>.from(readings.map((x) => x.toJson())),
+    "readings": List<dynamic>.from(readings.values.map((x) => x.toJson())),
     'updatedAt': updatedAt != null ? updatedAt.toString() : null
   };
 }

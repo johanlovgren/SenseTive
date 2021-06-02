@@ -29,7 +29,7 @@ class _HistoryState extends State<History> {
     _historyBloc.getError.listen((errorMessage) {
       _showErrorSnackbar(errorMessage);
     });
-    sortBy = _historyBloc.sortAlternatives[0];
+    sortBy = HistoryBloc.sortAlternatives[0];
   }
 
   @override
@@ -113,7 +113,7 @@ class _HistoryState extends State<History> {
             ),
           ),
           itemBuilder: (BuildContext context) {
-            return _historyBloc.sortAlternatives.map((alternative) =>
+            return HistoryBloc.sortAlternatives.map((alternative) =>
                 PopupMenuItem<String>(
                     child: Text(alternative),
                     value: alternative
