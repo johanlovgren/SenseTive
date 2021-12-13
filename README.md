@@ -38,4 +38,4 @@ user-generated data in a relational database.
     * Backend server
 
 # Note
-API keys found in this repository are revoked and can not be used.
+API keys that may be found in this repository were revoked before the repository went public.
