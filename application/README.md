@@ -1,8 +1,26 @@
-# application
+# Application
 
-A new Flutter project.
+A prototype application for [SenseTive](http://sensetive.se), a monitoring system for reducing the risk of stillbirths. 
 
-## Getting Started
+The application supports authentication of the user, creating "virtual" readings, showing details of a reading 
+and editing the user account. The readings are "virtual" since the sensor-kit which the application co-operates 
+with is still under development. The application is however prepared for the integration with the sensor-kit.
+
+## UI 
+![Login](ui_figures/login.PNG)
+![Create account](ui_figures/create_account.PNG)
+![Measuring](ui_figures/measure2.PNG)
+![History](ui_figures/history.PNG)
+![Reading details](ui_figures/reading.PNG)
+![Profile](ui_figures/profile.PNG)
+
+## Contributors
+- johanlovgren 
+    * Login
+    * History
+    * Profile
+- asc0109
+    * Measuring
 
 This project is a starting point for a Flutter application.
 
