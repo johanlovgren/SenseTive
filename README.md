@@ -36,3 +36,6 @@ user-generated data in a relational database.
     * Profile
 - rickebo
     * Backend server
+
+# Note
+API keys found in this repository are revoked and can not be used.
