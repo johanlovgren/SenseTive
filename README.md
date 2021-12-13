@@ -28,11 +28,11 @@ The server consist of a Web API using REST and supports the application during a
 user-generated data in a relational database. 
 
 # Contributors
+- asc0109
+    * Measuring
 - johanlovgren
     * Login
     * History
     * Profile
-- asc0109
-    * Measuring
 - rickebo
     * Backend server
