@@ -7,12 +7,18 @@ and editing the user account. The readings are "virtual" since the sensor-kit wh
 with is still under development. The application is however prepared for the integration with the sensor-kit.
 
 ## UI 
-![Login](ui_figures/login.PNG)
-![Create account](ui_figures/create_account.PNG)
-![Measuring](ui_figures/measure2.PNG)
-![History](ui_figures/history.PNG)
-![Reading details](ui_figures/reading.PNG)
-![Profile](ui_figures/profile.PNG)
+<p float="left">
+   <img src="ui_figures/login.PNG" width="375" height="667">
+   <img src="ui_figures/create_account.PNG" width="375" height="667">
+</p>
+<p float="left">  
+   <img src="ui_figures/measure2.PNG" width="375" height="667">
+   <img src="ui_figures/history.PNG" width="375" height="667">
+</p>
+<p float="left">
+   <img src="ui_figures/reading.PNG" width="375" height="667">
+   <img src="ui_figures/profile.PNG" width="375" height="667">
+</p>
 
 ## Contributors
 - johanlovgren 
@@ -21,14 +27,3 @@ with is still under development. The application is however prepared for the int
     * Profile
 - asc0109
     * Measuring
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
